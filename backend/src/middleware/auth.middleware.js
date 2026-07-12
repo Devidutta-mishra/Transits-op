@@ -1,7 +1,5 @@
-import jwt from "jsonwebtoken";
-
-import { env } from "../config/env.js";
 import { AppError } from "../utils/appError.js";
+import { verifyJwt } from "../utils/jwt.js";
 
 export async function authenticateToken(req, _res, next) {
   const authorizationHeader = req.headers.authorization;
@@ -13,7 +11,7 @@ export async function authenticateToken(req, _res, next) {
   const token = authorizationHeader.split(" ")[1];
 
   try {
-    const decoded = jwt.verify(token, env.jwtSecret);
+    const decoded = verifyJwt(token);
     req.user = decoded;
     return next();
   } catch {

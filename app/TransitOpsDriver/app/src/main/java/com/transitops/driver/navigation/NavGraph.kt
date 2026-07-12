@@ -5,6 +5,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -15,15 +18,29 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.transitops.driver.auth.ui.login.LoginScreen
 import com.transitops.driver.auth.ui.login.LoginViewModel
+import com.transitops.driver.core.network.TokenManager
+import com.transitops.driver.home.ui.DriverHomeScreen
+import com.transitops.driver.home.ui.DriverHomeViewModel
 import kotlinx.coroutines.launch
 
 @Composable
 fun NavGraph(
     navController: NavHostController,
     snackbarHostState: SnackbarHostState,
+    tokenManager: TokenManager = hiltViewModel<TokenViewModel>().tokenManager,
     startDestination: String = Screen.Splash.route
 ) {
     val scope = rememberCoroutineScope()
+    val token by tokenManager.getToken().collectAsState(initial = null)
+
+    LaunchedEffect(token) {
+        if (token == null && navController.currentDestination?.route != Screen.Login.route && navController.currentDestination?.route != Screen.Splash.route) {
+            navController.navigate(Screen.Login.route) {
+                popUpTo(0) { inclusive = true }
+            }
+        }
+    }
+
     NavHost(
         navController = navController,
         startDestination = startDestination
@@ -54,9 +71,21 @@ fun NavGraph(
             )
         }
         composable(Screen.Home.route) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(text = "Home Screen Placeholder")
-            }
+            val viewModel: DriverHomeViewModel = hiltViewModel()
+            DriverHomeScreen(
+                viewModel = viewModel,
+                onNavigateToTripDetails = { tripId ->
+                    navController.navigate(Screen.TripDetails.createRoute(tripId))
+                },
+                onNavigateToNotifications = {
+                    navController.navigate(Screen.Notifications.route)
+                },
+                showSnackbar = { message ->
+                    scope.launch {
+                        snackbarHostState.showSnackbar(message)
+                    }
+                }
+            )
         }
         composable(Screen.Trips.route) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

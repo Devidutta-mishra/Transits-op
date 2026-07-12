@@ -1,108 +1,330 @@
-import { query } from "../database/pool.js";
+import { prisma } from "../database/prisma.js";
 
 export class DashboardRepository {
+  async getDriverDashboardByUserId(userId) {
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const [driver, todayTrips] = await prisma.$transaction([
+      prisma.driver.findUnique({
+        where: {
+          userId: Number(userId)
+        },
+        select: {
+          id: true,
+          employeeId: true,
+          status: true,
+          rating: true,
+          totalTrips: true,
+          totalDistance: true,
+          user: {
+            select: {
+              id: true,
+              fullName: true,
+              phone: true,
+              role: {
+                select: {
+                  name: true
+                }
+              }
+            }
+          },
+          assignedVehicle: {
+            select: {
+              id: true,
+              registrationNumber: true,
+              model: true,
+              manufacturer: true,
+              currentFuelLevel: true,
+              currentOdometer: true,
+              status: true,
+              insuranceExpiry: true,
+              serviceDueDate: true
+            }
+          },
+          trips: {
+            where: {
+              status: {
+                in: ["assigned", "started", "in_progress"]
+              }
+            },
+            orderBy: [
+              { scheduledStart: "asc" },
+              { createdAt: "desc" }
+            ],
+            take: 1,
+            select: {
+              id: true,
+              tripNumber: true,
+              status: true,
+              origin: true,
+              destination: true,
+              scheduledStart: true,
+              estimatedArrival: true,
+              actualArrival: true,
+              actualStart: true,
+              routeDistance: true,
+              fuelConsumed: true,
+              trackingLocations: {
+                orderBy: {
+                  recordedAt: "desc"
+                },
+                take: 1,
+                select: {
+                  latitude: true,
+                  longitude: true,
+                  recordedAt: true
+                }
+              }
+            }
+          }
+        }
+      }),
+      prisma.trip.findMany({
+        where: {
+          driver: {
+            userId: Number(userId)
+          },
+          OR: [
+            {
+              actualArrival: {
+                gte: startOfDay,
+                lte: endOfDay
+              }
+            },
+            {
+              scheduledStart: {
+                gte: startOfDay,
+                lte: endOfDay
+              }
+            }
+          ]
+        },
+        select: {
+          id: true,
+          status: true,
+          routeDistance: true,
+          fuelConsumed: true,
+          actualStart: true,
+          actualArrival: true,
+          scheduledStart: true
+        }
+      })
+    ]);
+
+    return {
+      driver,
+      todayTrips
+    };
+  }
+
   async getOverview() {
-    const { rows } = await query(
-      `
-        SELECT
-          (SELECT COUNT(*)::int FROM vehicles) AS "totalVehicles",
-          (SELECT COUNT(*)::int FROM vehicles WHERE status IN ('ASSIGNED', 'IN_TRANSIT')) AS "activeVehicles",
-          (SELECT COUNT(*)::int FROM vehicles WHERE status = 'MAINTENANCE') AS "vehiclesInMaintenance",
-          (SELECT COUNT(*)::int FROM vehicles WHERE status = 'AVAILABLE') AS "availableVehicles",
-          (SELECT COUNT(*)::int FROM trips WHERE status IN ('assigned', 'started', 'in_progress')) AS "activeTrips",
-          (SELECT COUNT(*)::int FROM trips WHERE status = 'completed' AND actual_arrival::date = CURRENT_DATE) AS "completedTripsToday",
-          (SELECT COUNT(*)::int FROM drivers WHERE status IN ('AVAILABLE', 'OFF_DUTY')) AS "idleDrivers",
-          (SELECT COUNT(*)::int FROM drivers WHERE status IN ('ASSIGNED', 'ON_TRIP', 'ON_DUTY')) AS "driversOnDuty"
-      `
+    const [vehicleCounts, tripCounts, completedTripsToday, driverCounts] =
+      await prisma.$transaction([
+        prisma.vehicle.groupBy({
+          by: ["status"],
+          _count: {
+            _all: true
+          }
+        }),
+        prisma.trip.groupBy({
+          by: ["status"],
+          _count: {
+            _all: true
+          }
+        }),
+        prisma.trip.count({
+          where: {
+            status: "completed",
+            actualArrival: {
+              gte: new Date(new Date().setHours(0, 0, 0, 0)),
+              lte: new Date(new Date().setHours(23, 59, 59, 999))
+            }
+          }
+        }),
+        prisma.driver.groupBy({
+          by: ["status"],
+          _count: {
+            _all: true
+          }
+        })
+      ]);
+
+    const vehicleMap = Object.fromEntries(
+      vehicleCounts.map((item) => [item.status, item._count._all])
+    );
+    const tripMap = Object.fromEntries(
+      tripCounts.map((item) => [item.status, item._count._all])
+    );
+    const driverMap = Object.fromEntries(
+      driverCounts.map((item) => [item.status, item._count._all])
     );
 
-    return rows[0];
+    return {
+      totalVehicles: Object.values(vehicleMap).reduce((sum, count) => sum + count, 0),
+      activeVehicles: (vehicleMap.ASSIGNED || 0) + (vehicleMap.IN_TRANSIT || 0),
+      vehiclesInMaintenance: vehicleMap.MAINTENANCE || 0,
+      availableVehicles: vehicleMap.AVAILABLE || 0,
+      activeTrips:
+        (tripMap.assigned || 0) + (tripMap.started || 0) + (tripMap.in_progress || 0),
+      completedTripsToday,
+      idleDrivers: (driverMap.AVAILABLE || 0) + (driverMap.OFF_DUTY || 0),
+      driversOnDuty:
+        (driverMap.ASSIGNED || 0) + (driverMap.ON_TRIP || 0) + (driverMap.ON_DUTY || 0)
+    };
   }
 
   async getFleetHealth() {
-    const { rows } = await query(
-      `
-        SELECT json_build_object(
-          'upcomingMaintenance', (
-            SELECT COALESCE(json_agg(row_to_json(vm)), '[]'::json)
-            FROM (
-              SELECT id, registration_number AS "registrationNumber", service_due_date AS "serviceDueDate"
-              FROM vehicles
-              WHERE service_due_date IS NOT NULL
-                AND service_due_date <= CURRENT_DATE + INTERVAL '30 days'
-              ORDER BY service_due_date ASC
-            ) vm
-          ),
-          'expiredInsurance', (
-            SELECT COALESCE(json_agg(row_to_json(vi)), '[]'::json)
-            FROM (
-              SELECT id, registration_number AS "registrationNumber", insurance_expiry AS "insuranceExpiry"
-              FROM vehicles
-              WHERE insurance_expiry IS NOT NULL
-                AND insurance_expiry < CURRENT_DATE
-              ORDER BY insurance_expiry ASC
-            ) vi
-          ),
-          'expiredFitness', (
-            SELECT COALESCE(json_agg(row_to_json(vf)), '[]'::json)
-            FROM (
-              SELECT id, registration_number AS "registrationNumber", fitness_expiry AS "fitnessExpiry"
-              FROM vehicles
-              WHERE fitness_expiry IS NOT NULL
-                AND fitness_expiry < CURRENT_DATE
-              ORDER BY fitness_expiry ASC
-            ) vf
-          ),
-          'expiringPollutionCertificates', (
-            SELECT COALESCE(json_agg(row_to_json(vp)), '[]'::json)
-            FROM (
-              SELECT id, registration_number AS "registrationNumber", pollution_expiry AS "pollutionExpiry"
-              FROM vehicles
-              WHERE pollution_expiry IS NOT NULL
-                AND pollution_expiry <= CURRENT_DATE + INTERVAL '30 days'
-              ORDER BY pollution_expiry ASC
-            ) vp
-          )
-        ) AS health
-      `
-    );
+    const now = new Date();
+    const inThirtyDays = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
 
-    return rows[0].health;
+    const [
+      upcomingMaintenance,
+      expiredInsurance,
+      expiredFitness,
+      expiringPollutionCertificates
+    ] = await prisma.$transaction([
+      prisma.vehicle.findMany({
+        where: {
+          serviceDueDate: {
+            lte: inThirtyDays
+          }
+        },
+        orderBy: {
+          serviceDueDate: "asc"
+        },
+        select: {
+          id: true,
+          registrationNumber: true,
+          serviceDueDate: true
+        }
+      }),
+      prisma.vehicle.findMany({
+        where: {
+          insuranceExpiry: {
+            lt: now
+          }
+        },
+        orderBy: {
+          insuranceExpiry: "asc"
+        },
+        select: {
+          id: true,
+          registrationNumber: true,
+          insuranceExpiry: true
+        }
+      }),
+      prisma.vehicle.findMany({
+        where: {
+          fitnessExpiry: {
+            lt: now
+          }
+        },
+        orderBy: {
+          fitnessExpiry: "asc"
+        },
+        select: {
+          id: true,
+          registrationNumber: true,
+          fitnessExpiry: true
+        }
+      }),
+      prisma.vehicle.findMany({
+        where: {
+          pollutionExpiry: {
+            lte: inThirtyDays
+          }
+        },
+        orderBy: {
+          pollutionExpiry: "asc"
+        },
+        select: {
+          id: true,
+          registrationNumber: true,
+          pollutionExpiry: true
+        }
+      })
+    ]);
+
+    return {
+      upcomingMaintenance,
+      expiredInsurance,
+      expiredFitness,
+      expiringPollutionCertificates
+    };
   }
 
   async getLiveMap() {
-    const { rows } = await query(
-      `
-        SELECT DISTINCT ON (v.id)
-          v.id AS "vehicleId",
-          v.registration_number AS "registrationNumber",
-          v.status::text AS "vehicleStatus",
-          json_build_object(
-            'id', d.id,
-            'employeeId', d.employee_id,
-            'name', u.full_name
-          ) AS driver,
-          json_build_object(
-            'id', t.id,
-            'tripNumber', t.trip_number,
-            'status', t.status
-          ) AS trip,
-          json_build_object(
-            'latitude', COALESCE(tl.latitude, v.current_latitude),
-            'longitude', COALESCE(tl.longitude, v.current_longitude)
-          ) AS location,
-          tl.speed,
-          tl.recorded_at AS "timestamp"
-        FROM vehicles v
-        LEFT JOIN trips t ON t.id = v.current_trip_id
-        LEFT JOIN drivers d ON d.id = v.assigned_driver_id
-        LEFT JOIN users u ON u.id = d.user_id
-        LEFT JOIN tracking_locations tl ON tl.vehicle_id = v.id
-        WHERE v.status IN ('ASSIGNED', 'IN_TRANSIT')
-        ORDER BY v.id, tl.recorded_at DESC NULLS LAST
-      `
-    );
+    const vehicles = await prisma.vehicle.findMany({
+      where: {
+        status: {
+          in: ["ASSIGNED", "IN_TRANSIT"]
+        }
+      },
+      select: {
+        id: true,
+        registrationNumber: true,
+        status: true,
+        currentLatitude: true,
+        currentLongitude: true,
+        assignedDriver: {
+          select: {
+            id: true,
+            employeeId: true,
+            user: {
+              select: {
+                fullName: true
+              }
+            }
+          }
+        },
+        currentTrip: {
+          select: {
+            id: true,
+            tripNumber: true,
+            status: true
+          }
+        },
+        trackingLocations: {
+          orderBy: {
+            recordedAt: "desc"
+          },
+          take: 1,
+          select: {
+            latitude: true,
+            longitude: true,
+            speed: true,
+            recordedAt: true
+          }
+        }
+      }
+    });
 
-    return rows;
+    return vehicles.map((vehicle) => {
+      const latestTracking = vehicle.trackingLocations[0];
+
+      return {
+        vehicleId: vehicle.id,
+        registrationNumber: vehicle.registrationNumber,
+        vehicleStatus: vehicle.status,
+        driver: vehicle.assignedDriver
+          ? {
+              id: vehicle.assignedDriver.id,
+              employeeId: vehicle.assignedDriver.employeeId,
+              name: vehicle.assignedDriver.user.fullName
+            }
+          : null,
+        trip: vehicle.currentTrip,
+        location: {
+          latitude: latestTracking?.latitude ?? vehicle.currentLatitude,
+          longitude: latestTracking?.longitude ?? vehicle.currentLongitude
+        },
+        speed: latestTracking?.speed ?? null,
+        timestamp: latestTracking?.recordedAt ?? null
+      };
+    });
   }
 }

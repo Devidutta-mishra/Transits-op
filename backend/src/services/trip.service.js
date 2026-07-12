@@ -63,7 +63,7 @@ export class TripService {
       const trip = await tripRepository.create(client, {
         ...payload,
         status: payload.status || "scheduled",
-        createdBy: user.sub
+        createdBy: user.userId
       });
 
       if (payload.vehicleId) {
@@ -102,7 +102,7 @@ export class TripService {
   async listTrips(queryParams, user) {
     const scope =
       String(user.role || "").toLowerCase() === "driver".toLowerCase()
-        ? { driverUserId: user.sub }
+        ? { driverUserId: user.userId }
         : {};
     const result = await tripRepository.list(queryParams, scope);
 
@@ -117,7 +117,7 @@ export class TripService {
     }
 
     if (String(user.role || "").toLowerCase() === "driver") {
-      const driver = await driverRepository.findByUserId(user.sub);
+      const driver = await driverRepository.findByUserId(user.userId);
 
       if (!driver || trip.driver?.id !== driver.id) {
         throw new AppError("You are not authorized to view this trip", 403);

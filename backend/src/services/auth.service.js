@@ -1,28 +1,23 @@
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+import { Prisma } from "@prisma/client";
 
 import { env } from "../config/env.js";
-import { authModel } from "../models/auth.model.js";
+import { authRepository } from "../repositories/auth.repository.js";
 import { AppError } from "../utils/appError.js";
 import { normalizeRoleName, serializeUser } from "../utils/auth.js";
+import { signJwt } from "../utils/jwt.js";
 
 class AuthService {
   generateToken(user) {
-    return jwt.sign(
-      {
-        sub: user.id,
-        email: user.email,
-        role: user.role
-      },
-      env.jwtSecret,
-      {
-        expiresIn: env.jwtExpires
-      }
-    );
+    return signJwt({
+      userId: user.id,
+      email: user.email,
+      role: typeof user.role === "string" ? user.role : user.role?.name
+    });
   }
 
   async register(payload) {
-    const existingUser = await authModel.findUserByEmail(payload.email);
+    const existingUser = await authRepository.findUserByEmail(payload.email);
 
     if (existingUser) {
       throw new AppError("Email is already registered", 409, [
@@ -31,7 +26,7 @@ class AuthService {
     }
 
     if (payload.phone) {
-      const userWithPhone = await authModel.findUserByPhone(payload.phone);
+      const userWithPhone = await authRepository.findUserByPhone(payload.phone);
 
       if (userWithPhone) {
         throw new AppError("Phone is already registered", 409, [
@@ -41,7 +36,7 @@ class AuthService {
     }
 
     const roleName = normalizeRoleName(payload.role);
-    const role = await authModel.findRoleByName(roleName);
+    const role = await authRepository.findRoleByName(roleName);
 
     if (!role) {
       throw new AppError("Invalid role selected", 400, [
@@ -51,13 +46,23 @@ class AuthService {
 
     const passwordHash = await bcrypt.hash(payload.password, env.bcryptRounds);
 
-    const user = await authModel.createUser({
-      roleId: role.id,
-      fullName: payload.fullName,
-      email: payload.email,
-      phone: payload.phone || null,
-      passwordHash
-    });
+    let user;
+
+    try {
+      user = await authRepository.createUser({
+        roleId: role.id,
+        fullName: payload.fullName,
+        email: payload.email,
+        phone: payload.phone || null,
+        passwordHash
+      });
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+        throw new AppError("User with the provided unique field already exists", 409);
+      }
+
+      throw error;
+    }
 
     return {
       token: this.generateToken(user),
@@ -66,19 +71,19 @@ class AuthService {
   }
 
   async login(payload) {
-    const user = await authModel.findUserByEmail(payload.email);
+    const user = await authRepository.findUserByEmail(payload.email);
 
-    if (!user || !user.password_hash) {
+    if (!user || !user.passwordHash) {
       throw new AppError("Invalid email or password", 401);
     }
 
-    if (!user.is_active || user.status !== "ACTIVE") {
+    if (!user.isActive || user.status !== "ACTIVE") {
       throw new AppError("User account is inactive", 403);
     }
 
     const passwordMatches = await bcrypt.compare(
       payload.password,
-      user.password_hash
+      user.passwordHash
     );
 
     if (!passwordMatches) {
@@ -92,7 +97,7 @@ class AuthService {
   }
 
   async getCurrentUser(userId) {
-    const user = await authModel.findUserById(userId);
+    const user = await authRepository.findUserById(userId);
 
     if (!user) {
       throw new AppError("User not found", 404);

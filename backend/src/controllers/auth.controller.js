@@ -12,7 +12,7 @@ export async function login(req, res) {
 }
 
 export async function getCurrentUser(req, res) {
-  const result = await authService.getCurrentUser(req.user.sub);
+  const result = await authService.getCurrentUser(req.user.userId);
   return res.status(200).json(successResponse(result));
 }
 

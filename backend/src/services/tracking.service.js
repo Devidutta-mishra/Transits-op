@@ -19,7 +19,7 @@ export class TrackingService {
     }
 
     if (String(user.role || "").toLowerCase() === "driver") {
-      const driver = await driverRepository.findByUserId(user.sub);
+      const driver = await driverRepository.findByUserId(user.userId);
 
       if (!driver || driver.id !== payload.driverId || trip.driver?.id !== driver.id) {
         throw new AppError("You can only update location for your assigned trip", 403);
@@ -76,7 +76,7 @@ export class TrackingService {
     }
 
     if (String(user.role || "").toLowerCase() === "driver") {
-      const driver = await driverRepository.findByUserId(user.sub);
+      const driver = await driverRepository.findByUserId(user.userId);
 
       if (!driver || trip.driver?.id !== driver.id) {
         throw new AppError("You are not authorized to view this tracking data", 403);

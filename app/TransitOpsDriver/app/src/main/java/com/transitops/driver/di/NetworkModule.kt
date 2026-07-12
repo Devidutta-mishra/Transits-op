@@ -2,9 +2,10 @@ package com.transitops.driver.di
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.transitops.driver.BuildConfig
-import com.transitops.driver.core.constants.NetworkConstants
-import com.transitops.driver.data.remote.api.TransitOpsApi
-import com.transitops.driver.data.remote.interceptor.AuthInterceptor
+import com.transitops.driver.auth.api.AuthApi
+import com.transitops.driver.core.network.ApiClient
+import com.transitops.driver.core.network.AuthInterceptor
+import com.transitops.driver.home.api.DriverDashboardApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -46,24 +47,35 @@ object NetworkModule {
         return OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)
             .addInterceptor(authInterceptor)
-            .connectTimeout(NetworkConstants.TIMEOUT_SECONDS, TimeUnit.SECONDS)
-            .readTimeout(NetworkConstants.TIMEOUT_SECONDS, TimeUnit.SECONDS)
-            .writeTimeout(NetworkConstants.TIMEOUT_SECONDS, TimeUnit.SECONDS)
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
             .build()
     }
 
     @Provides
     @Singleton
-    fun provideTransitOpsApi(
+    fun provideRetrofit(
         okHttpClient: OkHttpClient,
         json: Json
-    ): TransitOpsApi {
+    ): Retrofit {
         val contentType = "application/json".toMediaType()
         return Retrofit.Builder()
-            .baseUrl(BuildConfig.BASE_URL)
+            .baseUrl(ApiClient.BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(json.asConverterFactory(contentType))
             .build()
-            .create(TransitOpsApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAuthApi(retrofit: Retrofit): AuthApi {
+        return retrofit.create(AuthApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDriverDashboardApi(retrofit: Retrofit): DriverDashboardApi {
+        return retrofit.create(DriverDashboardApi::class.java)
     }
 }

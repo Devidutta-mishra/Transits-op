@@ -24,13 +24,13 @@ export function normalizeRoleName(role) {
 export function serializeUser(user) {
   return {
     id: user.id,
-    fullName: user.full_name,
+    fullName: user.fullName ?? user.full_name,
     email: user.email,
     phone: user.phone,
-    role: user.role,
+    role: typeof user.role === "string" ? user.role : user.role?.name,
     status: user.status,
-    isActive: user.is_active,
-    createdAt: user.created_at,
-    updatedAt: user.updated_at
+    isActive: user.isActive ?? user.is_active,
+    createdAt: user.createdAt ?? user.created_at,
+    updatedAt: user.updatedAt ?? user.updated_at
   };
 }

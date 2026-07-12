@@ -1,10 +1,11 @@
 package com.transitops.driver.di
 
 import com.transitops.driver.auth.repository.AuthRepository
-import com.transitops.driver.auth.repository.FakeAuthRepository
+import com.transitops.driver.auth.repository.AuthRepositoryImpl
+import com.transitops.driver.home.repository.DriverDashboardRepository
+import com.transitops.driver.home.repository.DriverDashboardRepositoryImpl
 import com.transitops.driver.data.repository.DriverRepositoryImpl
 import com.transitops.driver.data.repository.TripRepositoryImpl
-import com.transitops.driver.domain.repository.AuthenticationRepository
 import com.transitops.driver.domain.repository.DriverRepository
 import com.transitops.driver.domain.repository.TripRepository
 import dagger.Binds
@@ -20,7 +21,7 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindAuthRepository(
-        fakeAuthRepository: FakeAuthRepository
+        authRepositoryImpl: AuthRepositoryImpl
     ): AuthRepository
 
     @Binds
@@ -34,4 +35,10 @@ abstract class RepositoryModule {
     abstract fun bindDriverRepository(
         driverRepositoryImpl: DriverRepositoryImpl
     ): DriverRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindDriverDashboardRepository(
+        driverDashboardRepositoryImpl: DriverDashboardRepositoryImpl
+    ): DriverDashboardRepository
 }
