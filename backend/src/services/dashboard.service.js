@@ -183,6 +183,10 @@ export class DashboardService {
     return dashboardRepository.getOverview();
   }
 
+  async getWebsiteDashboard() {
+    return dashboardRepository.getWebsiteDashboard();
+  }
+
   async getFleetHealth() {
     return dashboardRepository.getFleetHealth();
   }

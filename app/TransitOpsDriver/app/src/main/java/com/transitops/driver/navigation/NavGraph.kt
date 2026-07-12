@@ -21,6 +21,10 @@ import com.transitops.driver.auth.ui.login.LoginViewModel
 import com.transitops.driver.core.network.TokenManager
 import com.transitops.driver.home.ui.DriverHomeScreen
 import com.transitops.driver.home.ui.DriverHomeViewModel
+import com.transitops.driver.trips.ui.details.TripDetailsScreen
+import com.transitops.driver.trips.ui.details.TripDetailsViewModel
+import com.transitops.driver.trips.ui.list.TripListScreen
+import com.transitops.driver.trips.ui.list.TripListViewModel
 import kotlinx.coroutines.launch
 
 @Composable
@@ -88,17 +92,29 @@ fun NavGraph(
             )
         }
         composable(Screen.Trips.route) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(text = "Trips Screen Placeholder")
-            }
+            val viewModel: TripListViewModel = hiltViewModel()
+            TripListScreen(
+                viewModel = viewModel,
+                onNavigateToDetails = { tripId ->
+                    navController.navigate(Screen.TripDetails.createRoute(tripId))
+                }
+            )
         }
         composable(
             route = Screen.TripDetails.route,
             arguments = listOf(navArgument("tripId") { })
-        ) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(text = "Trip Details Placeholder")
-            }
+        ) { backStackEntry ->
+            val tripId = backStackEntry.arguments?.getString("tripId")
+            val viewModel: TripDetailsViewModel = hiltViewModel()
+            TripDetailsScreen(
+                viewModel = viewModel,
+                tripId = tripId,
+                showSnackbar = { message ->
+                    scope.launch {
+                        snackbarHostState.showSnackbar(message)
+                    }
+                }
+            )
         }
         composable(Screen.Profile.route) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

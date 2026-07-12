@@ -13,6 +13,11 @@ export async function getDashboardOverview(req, res) {
   return res.status(200).json(successResponse(overview, "Dashboard overview fetched successfully"));
 }
 
+export async function getWebsiteDashboard(req, res) {
+  const dashboard = await dashboardService.getWebsiteDashboard();
+  return res.status(200).json(successResponse(dashboard, "Website dashboard fetched successfully"));
+}
+
 export async function getFleetHealth(req, res) {
   const fleetHealth = await dashboardService.getFleetHealth();
   return res.status(200).json(successResponse(fleetHealth, "Fleet health fetched successfully"));
