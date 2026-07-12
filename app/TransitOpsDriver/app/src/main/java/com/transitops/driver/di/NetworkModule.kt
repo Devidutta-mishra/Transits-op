@@ -1,7 +1,6 @@
 package com.transitops.driver.di
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
-import com.transitops.driver.BuildConfig
 import com.transitops.driver.auth.api.AuthApi
 import com.transitops.driver.core.network.ApiClient
 import com.transitops.driver.core.network.AuthInterceptor
@@ -37,19 +36,15 @@ object NetworkModule {
         authInterceptor: AuthInterceptor
     ): OkHttpClient {
         val loggingInterceptor = HttpLoggingInterceptor().apply {
-            level = if (BuildConfig.DEBUG) {
-                HttpLoggingInterceptor.Level.BODY
-            } else {
-                HttpLoggingInterceptor.Level.NONE
-            }
+            level = HttpLoggingInterceptor.Level.BODY
         }
 
         return OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)
             .addInterceptor(authInterceptor)
-            .connectTimeout(30, TimeUnit.SECONDS)
-            .readTimeout(30, TimeUnit.SECONDS)
-            .writeTimeout(30, TimeUnit.SECONDS)
+            .connectTimeout(60, TimeUnit.SECONDS)
+            .readTimeout(60, TimeUnit.SECONDS)
+            .writeTimeout(60, TimeUnit.SECONDS)
             .build()
     }
 
@@ -59,6 +54,7 @@ object NetworkModule {
         okHttpClient: OkHttpClient,
         json: Json
     ): Retrofit {
+        android.util.Log.d("Network", "Retrofit initializing with Base URL: ${ApiClient.BASE_URL}")
         val contentType = "application/json".toMediaType()
         return Retrofit.Builder()
             .baseUrl(ApiClient.BASE_URL)

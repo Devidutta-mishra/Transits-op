@@ -13,7 +13,8 @@ class AuthInterceptor @Inject constructor(
         val originalRequest = chain.request()
         val path = originalRequest.url.encodedPath
 
-        if (path.endsWith("/auth/login") || path.endsWith("/auth/register")) {
+        // Do NOT attach Authorization header to login or health endpoints
+        if (path.contains(ApiClient.LOGIN_PATH) || path.contains(ApiClient.HEALTH_PATH)) {
             return chain.proceed(originalRequest)
         }
 
