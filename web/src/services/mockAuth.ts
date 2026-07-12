@@ -1,44 +1,5 @@
 import type { User, Role } from '../types/auth';
 
-const DEMO_USERS: Record<string, { user: User; passwordHash: string }> = {
-  'manager@transitops.com': {
-    user: {
-      id: 'usr_001',
-      email: 'manager@transitops.com',
-      name: 'Sarah Jenkins',
-      role: 'FLEET_MANAGER',
-    },
-    passwordHash: 'Manager123!',
-  },
-  'dispatcher@transitops.com': {
-    user: {
-      id: 'usr_002',
-      email: 'dispatcher@transitops.com',
-      name: 'Marcus Vance',
-      role: 'DISPATCHER',
-    },
-    passwordHash: 'Dispatcher123!',
-  },
-  'safety@transitops.com': {
-    user: {
-      id: 'usr_003',
-      email: 'safety@transitops.com',
-      name: 'Elena Rostova',
-      role: 'SAFETY_OFFICER',
-    },
-    passwordHash: 'Safety123!',
-  },
-  'analyst@transitops.com': {
-    user: {
-      id: 'usr_004',
-      email: 'analyst@transitops.com',
-      name: 'David Chen',
-      role: 'FINANCIAL_ANALYST',
-    },
-    passwordHash: 'Analyst123!',
-  },
-};
-
 export class AuthenticationError extends Error {
   constructor(message: string) {
     super(message);
@@ -46,28 +7,65 @@ export class AuthenticationError extends Error {
   }
 }
 
+const backendRoleMap: Record<string, Role> = {
+  'Admin': 'ADMINISTRATOR',
+  'Fleet Manager': 'FLEET_MANAGER',
+  'Dispatcher': 'DISPATCHER',
+  'Safety Officer': 'SAFETY_OFFICER',
+  'Financial Analyst': 'FINANCIAL_ANALYST'
+};
+
 export const mockAuthService = {
   login: async (email: string, password: string, selectedRole: Role): Promise<User> => {
-    // Simulate network delay
-    await new Promise((resolve) => setTimeout(resolve, 800));
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    
+    try {
+      const response = await fetch(`${API_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-    const normalizedEmail = email.toLowerCase().trim();
-    const account = DEMO_USERS[normalizedEmail];
+      const body = await response.json();
 
-    if (!account) {
-      throw new AuthenticationError('Invalid email or password.');
+      if (!response.ok) {
+        throw new AuthenticationError(body.message || 'Invalid credentials or connection error');
+      }
+
+      if (!body.success || !body.data || !body.data.user) {
+        throw new AuthenticationError('Invalid response format from server');
+      }
+
+      const backendUser = body.data.user;
+      const backendToken = body.data.token;
+      
+      const mappedRole = backendRoleMap[backendUser.role] || backendUser.role;
+
+      if (mappedRole !== selectedRole) {
+        throw new AuthenticationError(
+          `Selected role does not match the account's assigned role.`
+        );
+      }
+
+      // Store JWT token for subsequent API requests
+      if (backendToken) {
+        localStorage.setItem('transitops_token', backendToken);
+      }
+
+      return {
+        id: String(backendUser.id),
+        email: backendUser.email,
+        name: backendUser.fullName || backendUser.name || 'User',
+        role: mappedRole as Role,
+      };
+    } catch (error: any) {
+      if (error instanceof AuthenticationError) {
+        throw error;
+      }
+      console.error('API connection error:', error);
+      throw new AuthenticationError('Failed to connect to the backend server. Make sure the server is running.');
     }
-
-    if (account.passwordHash !== password) {
-      throw new AuthenticationError('Invalid email or password.');
-    }
-
-    if (account.user.role !== selectedRole) {
-      throw new AuthenticationError(
-        `Selected role does not match the account's assigned role.`
-      );
-    }
-
-    return account.user;
   },
 };

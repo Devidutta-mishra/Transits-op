@@ -26,6 +26,8 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
           <select
             id={id}
             ref={ref}
+            aria-invalid={!!error}
+            aria-describedby={error && id ? `${id}-error` : undefined}
             className={cn(
               "flex h-12 w-full rounded-md border border-white bg-[#222222] px-4 py-3 pr-10 text-sm text-white placeholder-[#A3A3A3] transition-all focus:border-white focus:outline-none focus:ring-1 focus:ring-white disabled:cursor-not-allowed disabled:opacity-50 appearance-none cursor-pointer",
               error && "border-[#EF4444] focus:border-[#EF4444] focus:ring-[#EF4444]",
@@ -51,7 +53,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
           </div>
         </div>
         {error && (
-          <p className="font-mono text-xs text-[#EF4444] mt-0.5">{error}</p>
+          <p id={id ? `${id}-error` : undefined} role="alert" className="font-mono text-xs text-[#EF4444] mt-0.5">{error}</p>
         )}
       </div>
     );

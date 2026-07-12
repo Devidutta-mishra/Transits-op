@@ -40,7 +40,7 @@ export class VehicleService {
         ...payload,
         name: `${payload.manufacturer || "Vehicle"} ${payload.model || payload.registrationNumber}`.trim(),
         status: mapVehicleStatus(payload.status),
-        createdBy: user.sub
+        createdBy: user.userId
       });
 
       if (payload.assignedDriverId) {

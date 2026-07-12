@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { usePermission } from '../hooks/usePermission';
 import { mockDashboardData } from '../mock/dashboard';
+import { api } from '../services/api';
 import { StatCard } from '../components/dashboard/StatCard';
 import { DashboardTable } from '../components/dashboard/DashboardTable';
 import { ProgressBar } from '../components/dashboard/ProgressBar';
@@ -24,6 +25,38 @@ export const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [currentDate, setCurrentDate] = useState<string>('');
+  const [dashboardData, setDashboardData] = useState<any>(mockDashboardData);
+
+  const fetchOverview = async () => {
+    try {
+      const liveOverview = await api.dashboard.getOverview();
+      setDashboardData((prev: any) => {
+        // Calculate percentages for vehicle status progress bar based on live overview
+        const total = liveOverview.totalVehicles || 1;
+        const liveVehicleStatus = [
+          { label: 'Available', count: liveOverview.availableVehicles || 0, percentage: Math.round(((liveOverview.availableVehicles || 0) / total) * 100), color: 'bg-green-600' },
+          { label: 'In Trip', count: liveOverview.activeVehicles || 0, percentage: Math.round(((liveOverview.activeVehicles || 0) / total) * 100), color: 'bg-[#D97706]' },
+          { label: 'Maintenance', count: liveOverview.vehiclesInMaintenance || 0, percentage: Math.round(((liveOverview.vehiclesInMaintenance || 0) / total) * 100), color: 'bg-red-600' },
+          { label: 'Idle', count: liveOverview.idleDrivers || 0, percentage: Math.round(((liveOverview.idleDrivers || 0) / total) * 100), color: 'bg-zinc-600' },
+        ];
+
+        return {
+          ...prev,
+          totalVehicles: liveOverview.totalVehicles ?? prev.totalVehicles,
+          activeDrivers: liveOverview.driversOnDuty ?? prev.activeDrivers,
+          tripsToday: liveOverview.completedTripsToday ?? prev.tripsToday,
+          scheduledTrips: liveOverview.activeTrips ?? prev.scheduledTrips,
+          vehiclesAvailable: liveOverview.availableVehicles ?? prev.vehiclesAvailable,
+          vehiclesInMaintenance: liveOverview.vehiclesInMaintenance ?? prev.vehiclesInMaintenance,
+          vehicleStatus: liveVehicleStatus
+        };
+      });
+    } catch (err) {
+      console.error('Failed to fetch dashboard overview:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
     setCurrentDate(
@@ -34,24 +67,19 @@ export const Dashboard: React.FC = () => {
       })
     );
 
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
-
-    return () => clearTimeout(timer);
+    fetchOverview();
   }, []);
 
   const handleRefresh = () => {
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
+    fetchOverview();
   };
 
   if (!user || !role) return null;
 
   const showStatCard = (cardId: string): boolean => {
     switch (role) {
+      case 'ADMINISTRATOR':
       case 'FLEET_MANAGER':
         return true;
       case 'DISPATCHER':
@@ -67,11 +95,11 @@ export const Dashboard: React.FC = () => {
 
   const getQuickActions = () => {
     const allActions = [
-      { name: 'Register Vehicle', path: '/fleet', role: ['FLEET_MANAGER'] },
-      { name: 'Assign Driver', path: '/drivers', role: ['FLEET_MANAGER', 'DISPATCHER'] },
-      { name: 'Create Trip', path: '/trips', role: ['FLEET_MANAGER', 'DISPATCHER'] },
-      { name: 'Add Fuel Log', path: '/fuel', role: ['FLEET_MANAGER', 'FINANCIAL_ANALYST'] },
-      { name: 'Schedule Maintenance', path: '/maintenance', role: ['FLEET_MANAGER', 'SAFETY_OFFICER'] },
+      { name: 'Register Vehicle', path: '/fleet', role: ['ADMINISTRATOR', 'FLEET_MANAGER'] },
+      { name: 'Assign Driver', path: '/drivers', role: ['ADMINISTRATOR', 'FLEET_MANAGER', 'DISPATCHER'] },
+      { name: 'Create Trip', path: '/trips', role: ['ADMINISTRATOR', 'FLEET_MANAGER', 'DISPATCHER'] },
+      { name: 'Add Fuel Log', path: '/fuel', role: ['ADMINISTRATOR', 'FLEET_MANAGER', 'FINANCIAL_ANALYST'] },
+      { name: 'Schedule Maintenance', path: '/maintenance', role: ['ADMINISTRATOR', 'FLEET_MANAGER', 'SAFETY_OFFICER'] },
     ];
     return allActions.filter(action => action.role.includes(role));
   };
@@ -79,50 +107,50 @@ export const Dashboard: React.FC = () => {
   const getKPIs = () => {
     const list = [];
     if (showStatCard('totalVehicles')) {
-      list.push({ title: 'Total Vehicles', value: mockDashboardData.totalVehicles, icon: Truck, subtitle: 'Total active fleet count', trend: { value: 'Stable', type: 'neutral' as const } });
+      list.push({ title: 'Total Vehicles', value: dashboardData.totalVehicles, icon: Truck, subtitle: 'Total active fleet count', trend: { value: 'Stable', type: 'neutral' as const } });
     }
     if (showStatCard('activeDrivers')) {
-      list.push({ title: 'Active Drivers', value: mockDashboardData.activeDrivers, icon: Users, subtitle: 'On duty operators', trend: { value: '+4%', type: 'up' as const } });
+      list.push({ title: 'Active Drivers', value: dashboardData.activeDrivers, icon: Users, subtitle: 'On duty operators', trend: { value: '+4%', type: 'up' as const } });
     }
     if (showStatCard('tripsToday')) {
-      list.push({ title: 'Trips Today', value: mockDashboardData.tripsToday, icon: Route, subtitle: 'Active consignments dispatch', trend: { value: '+12%', type: 'up' as const } });
+      list.push({ title: 'Trips Today', value: dashboardData.tripsToday, icon: Route, subtitle: 'Active consignments dispatch', trend: { value: '+12%', type: 'up' as const } });
     }
     if (showStatCard('scheduledTrips')) {
-      list.push({ title: 'Scheduled Trips', value: mockDashboardData.scheduledTrips, icon: Calendar, subtitle: 'Trips queue next 24h', trend: { value: '+2', type: 'up' as const } });
+      list.push({ title: 'Scheduled Trips', value: dashboardData.scheduledTrips, icon: Calendar, subtitle: 'Trips queue next 24h', trend: { value: '+2', type: 'up' as const } });
     }
     if (showStatCard('vehiclesAvailable')) {
-      list.push({ title: 'Vehicles Available', value: mockDashboardData.vehiclesAvailable, icon: CheckCircle2, subtitle: 'Idle in yard storage', trend: { value: '-2%', type: 'down' as const } });
+      list.push({ title: 'Vehicles Available', value: dashboardData.vehiclesAvailable, icon: CheckCircle2, subtitle: 'Idle in yard storage', trend: { value: '-2%', type: 'down' as const } });
     }
     if (showStatCard('vehiclesInMaintenance')) {
-      list.push({ title: 'Vehicles In Maintenance', value: mockDashboardData.vehiclesInMaintenance, icon: Wrench, subtitle: 'Active repair schedules', trend: { value: '-1', type: 'down' as const } });
+      list.push({ title: 'Vehicles In Maintenance', value: dashboardData.vehiclesInMaintenance, icon: Wrench, subtitle: 'Active repair schedules', trend: { value: '-1', type: 'down' as const } });
     }
     if (showStatCard('monthlyRevenue')) {
-      list.push({ title: 'Monthly Revenue', value: mockDashboardData.monthlyRevenue, icon: TrendingUp, subtitle: 'Current cycle billing', trend: { value: '+8.3%', type: 'up' as const } });
+      list.push({ title: 'Monthly Revenue', value: dashboardData.monthlyRevenue, icon: TrendingUp, subtitle: 'Current cycle billing', trend: { value: '+8.3%', type: 'up' as const } });
     }
     if (showStatCard('fuelCost')) {
-      list.push({ title: 'Fuel Cost', value: mockDashboardData.fuelCost, icon: Fuel, subtitle: 'Audit card transactions', trend: { value: '+1.2%', type: 'up' as const } });
+      list.push({ title: 'Fuel Cost', value: dashboardData.fuelCost, icon: Fuel, subtitle: 'Audit card transactions', trend: { value: '+1.2%', type: 'up' as const } });
     }
     if (showStatCard('safetyAlerts')) {
-      list.push({ title: 'Safety Alerts', value: mockDashboardData.safetyAlerts, icon: ShieldAlert, subtitle: 'Pending compliance alerts', trend: { value: 'Critical', type: 'down' as const } });
+      list.push({ title: 'Safety Alerts', value: dashboardData.safetyAlerts, icon: ShieldAlert, subtitle: 'Pending compliance alerts', trend: { value: 'Critical', type: 'down' as const } });
     }
     if (showStatCard('driverCompliance')) {
-      list.push({ title: 'Driver Compliance', value: mockDashboardData.driverCompliance, icon: UserCheck, subtitle: 'HOS limit audits score', trend: { value: '+0.5%', type: 'up' as const } });
+      list.push({ title: 'Driver Compliance', value: dashboardData.driverCompliance, icon: UserCheck, subtitle: 'HOS limit audits score', trend: { value: '+0.5%', type: 'up' as const } });
     }
     if (showStatCard('pendingInspections')) {
-      list.push({ title: 'Pending Inspections', value: mockDashboardData.pendingInspections, icon: ClipboardCheck, subtitle: 'DVIR logs checklist', trend: { value: 'Pending', type: 'neutral' as const } });
+      list.push({ title: 'Pending Inspections', value: dashboardData.pendingInspections, icon: ClipboardCheck, subtitle: 'DVIR logs checklist', trend: { value: 'Pending', type: 'neutral' as const } });
     }
     if (showStatCard('operatingCost')) {
-      list.push({ title: 'Operating Cost', value: mockDashboardData.operatingCost, icon: CreditCard, subtitle: 'Yard tolls & logistics cost', trend: { value: '-4.2%', type: 'up' as const } });
+      list.push({ title: 'Operating Cost', value: dashboardData.operatingCost, icon: CreditCard, subtitle: 'Yard tolls & logistics cost', trend: { value: '-4.2%', type: 'up' as const } });
     }
     if (showStatCard('costPerKm')) {
-      list.push({ title: 'Cost Per Km', value: mockDashboardData.costPerKm, icon: Milestone, subtitle: 'Average mileage expenses', trend: { value: 'Target: ₹14.00', type: 'neutral' as const } });
+      list.push({ title: 'Cost Per Km', value: dashboardData.costPerKm, icon: Milestone, subtitle: 'Average mileage expenses', trend: { value: 'Target: ₹14.00', type: 'neutral' as const } });
     }
     return list;
   };
 
-  const showOperationalDecks = role === 'FLEET_MANAGER' || role === 'DISPATCHER';
-  const showFinancialDecks = role === 'FLEET_MANAGER' || role === 'FINANCIAL_ANALYST';
-  const showSafetyDecks = role === 'SAFETY_OFFICER';
+  const showOperationalDecks = role === 'ADMINISTRATOR' || role === 'FLEET_MANAGER' || role === 'DISPATCHER';
+  const showFinancialDecks = role === 'ADMINISTRATOR' || role === 'FLEET_MANAGER' || role === 'FINANCIAL_ANALYST';
+  const showSafetyDecks = role === 'ADMINISTRATOR' || role === 'SAFETY_OFFICER';
 
   return (
     <div className="flex flex-col gap-6 text-left select-none font-sans">
@@ -182,7 +210,7 @@ export const Dashboard: React.FC = () => {
                 {isLoading ? (
                   <SkeletonLoader variant="table" />
                 ) : (
-                  <DashboardTable trips={mockDashboardData.trips} />
+                  <DashboardTable trips={dashboardData.trips} />
                 )}
               </div>
 
@@ -192,7 +220,7 @@ export const Dashboard: React.FC = () => {
                   <div className="h-20 bg-[#1C1C20] animate-pulse rounded-none" />
                 ) : (
                   <div className="pt-2">
-                    <ProgressBar segments={mockDashboardData.vehicleStatus} />
+                    <ProgressBar segments={dashboardData.vehicleStatus} />
                   </div>
                 )}
               </div>
@@ -207,7 +235,7 @@ export const Dashboard: React.FC = () => {
               ) : (
                 <div className="h-64 w-full pr-4 pt-4 font-mono text-[10px]">
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={mockDashboardData.utilizationHistory}>
+                    <BarChart data={dashboardData.utilizationHistory}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#2C2C2C" vertical={false} />
                       <XAxis dataKey="month" stroke="#A1A1AA" tickLine={false} />
                       <YAxis stroke="#A1A1AA" tickLine={false} domain={[0, 100]} unit="%" />
@@ -309,7 +337,7 @@ export const Dashboard: React.FC = () => {
               <SkeletonLoader variant="activity" count={5} />
             ) : (
               <div className="flex flex-col gap-2">
-                {mockDashboardData.activities.map((act) => (
+                {dashboardData.activities.map((act: any) => (
                   <ActivityItem
                     key={act.id}
                     message={act.message}

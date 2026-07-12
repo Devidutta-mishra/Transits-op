@@ -4,6 +4,7 @@ import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.transitops.driver.auth.repository.AuthRepository
+import com.transitops.driver.core.network.TokenManager
 import com.transitops.driver.core.preferences.SessionManager
 import com.transitops.driver.core.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,6 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val authRepository: AuthRepository,
+    private val tokenManager: TokenManager,
     private val sessionManager: SessionManager
 ) : ViewModel() {
 
@@ -58,7 +60,7 @@ class LoginViewModel @Inject constructor(
             when (result) {
                 is Resource.Success -> {
                     result.data?.let { response ->
-                        sessionManager.saveToken(response.token)
+                        tokenManager.saveToken(response.token)
                         sessionManager.saveUser(response.user)
                         _effect.send(LoginEffect.NavigateToHome)
                     }

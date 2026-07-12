@@ -1,1 +1,7 @@
-export { pool, query } from "../database/pool.js";
+export {
+  checkDatabaseConnection,
+  connectPrisma,
+  disconnectPrisma,
+  getDatabaseStatus,
+  prisma
+} from "../database/prisma.js";

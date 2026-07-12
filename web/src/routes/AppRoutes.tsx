@@ -1,17 +1,34 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Login } from '../pages/Login';
 import { Unauthorized } from '../pages/Unauthorized';
 import { NotFound } from '../pages/NotFound';
 import { Dashboard } from '../pages/Dashboard';
-import { PlaceholderPage } from '../pages/PlaceholderPage';
-import { VehicleRegistry } from '../pages/VehicleRegistry';
-import { DriverManagement } from '../pages/DriverManagement';
-import { TripManagement } from '../pages/TripManagement';
-import { MaintenanceManagement } from '../pages/MaintenanceManagement';
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import { ProtectedRoute } from './ProtectedRoute';
 import { useAuth } from '../hooks/useAuth';
+
+const VehicleRegistry = React.lazy(() => import('../pages/VehicleRegistry').then(m => ({ default: m.VehicleRegistry })));
+const DriverManagement = React.lazy(() => import('../pages/DriverManagement').then(m => ({ default: m.DriverManagement })));
+const TripManagement = React.lazy(() => import('../pages/TripManagement').then(m => ({ default: m.TripManagement })));
+const MaintenanceManagement = React.lazy(() => import('../pages/MaintenanceManagement').then(m => ({ default: m.MaintenanceManagement })));
+const FuelExpenseManagement = React.lazy(() => import('../pages/FuelExpenseManagement').then(m => ({ default: m.FuelExpenseManagement })));
+const ReportsAnalytics = React.lazy(() => import('../pages/ReportsAnalytics').then(m => ({ default: m.ReportsAnalytics })));
+const AdministrationSettings = React.lazy(() => import('../pages/AdministrationSettings').then(m => ({ default: m.AdministrationSettings })));
+const UserProfile = React.lazy(() => import('../pages/UserProfile').then(m => ({ default: m.UserProfile })));
+
+const RouteSuspense: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <Suspense
+    fallback={
+      <div className="flex flex-col items-center justify-center h-full w-full py-24 font-mono select-none">
+        <div className="w-8 h-8 border-2 border-[#2C2C2C] border-t-[#D97706] animate-spin mb-3" />
+        <span className="text-[10px] uppercase tracking-widest text-[#8E8E93]">Loading Module...</span>
+      </div>
+    }
+  >
+    {children}
+  </Suspense>
+);
 
 export const AppRoutes: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -55,7 +72,7 @@ export const AppRoutes: React.FC = () => {
           path="fleet" 
           element={
             <ProtectedRoute permission="view:fleet">
-              <VehicleRegistry />
+              <RouteSuspense><VehicleRegistry /></RouteSuspense>
             </ProtectedRoute>
           } 
         />
@@ -63,7 +80,7 @@ export const AppRoutes: React.FC = () => {
           path="drivers" 
           element={
             <ProtectedRoute permission="view:drivers">
-              <DriverManagement />
+              <RouteSuspense><DriverManagement /></RouteSuspense>
             </ProtectedRoute>
           } 
         />
@@ -71,7 +88,7 @@ export const AppRoutes: React.FC = () => {
           path="trips" 
           element={
             <ProtectedRoute permission="view:trips">
-              <TripManagement />
+              <RouteSuspense><TripManagement /></RouteSuspense>
             </ProtectedRoute>
           } 
         />
@@ -79,7 +96,7 @@ export const AppRoutes: React.FC = () => {
           path="maintenance" 
           element={
             <ProtectedRoute permission="view:maintenance">
-              <MaintenanceManagement />
+              <RouteSuspense><MaintenanceManagement /></RouteSuspense>
             </ProtectedRoute>
           } 
         />
@@ -87,7 +104,7 @@ export const AppRoutes: React.FC = () => {
           path="fuel" 
           element={
             <ProtectedRoute permission="view:fuel">
-              <PlaceholderPage title="Fuel & Expense Analytics" moduleName="Fuel & Expenses" />
+              <RouteSuspense><FuelExpenseManagement /></RouteSuspense>
             </ProtectedRoute>
           } 
         />
@@ -95,7 +112,7 @@ export const AppRoutes: React.FC = () => {
           path="analytics" 
           element={
             <ProtectedRoute permission="view:analytics">
-              <PlaceholderPage title="Operations Performance Analytics" moduleName="Analytics" />
+              <RouteSuspense><ReportsAnalytics /></RouteSuspense>
             </ProtectedRoute>
           } 
         />
@@ -103,7 +120,15 @@ export const AppRoutes: React.FC = () => {
           path="settings" 
           element={
             <ProtectedRoute permission="view:settings">
-              <PlaceholderPage title="System Administration Settings" moduleName="Settings" />
+              <RouteSuspense><AdministrationSettings /></RouteSuspense>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="profile" 
+          element={
+            <ProtectedRoute permission="view:dashboard">
+              <RouteSuspense><UserProfile /></RouteSuspense>
             </ProtectedRoute>
           } 
         />

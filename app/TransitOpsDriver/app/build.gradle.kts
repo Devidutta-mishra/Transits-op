@@ -22,13 +22,17 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-
-        buildConfigField("String", "BASE_URL", "\"https://api.transitops.com/\"")
     }
 
     buildTypes {
+        debug {
+            // For Emulator use 10.0.2.2, for Physical Device use your local IP (e.g., 10.182.182.63)
+            buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:8080/api/\"")
+        }
         release {
             isMinifyEnabled = false
+            // Update this when production Express backend is ready
+            buildConfigField("String", "BASE_URL", "\"https://api.transitops.express/api/\"")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

@@ -6,3 +6,100 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Role {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique @db.VarChar(50)
+  description String?
+  createdAt   DateTime? @default(now()) @map("created_at") @db.Timestamp(6)
+  users       User[]
+
+  @@map("roles")
+}
+
+model User {
+  id           Int         @id @default(autoincrement())
+  roleId       Int         @map("role_id")
+  fullName     String      @map("full_name") @db.VarChar(100)
+  email        String      @unique @db.VarChar(150)
+  passwordHash String      @map("password_hash")
+  phone        String?     @db.VarChar(20)
+  isActive     Boolean?    @default(true) @map("is_active")
+  status       UserStatus? @default(ACTIVE)
+  createdAt    DateTime?   @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt    DateTime?   @default(now()) @updatedAt @map("updated_at") @db.Timestamp(6)
+  driver       Driver?
+  role         Role        @relation(fields: [roleId], references: [id], onUpdate: NoAction)
+
+  @@map("users")
+}
+
+model Driver {
+  id              Int           @id @default(autoincrement())
+  userId          Int           @unique @map("user_id")
+  licenseNumber   String        @unique @map("license_number") @db.VarChar(50)
+  licenseCategory String?       @map("license_category") @db.VarChar(20)
+  licenseExpiry   DateTime      @map("license_expiry") @db.Date
+  safetyScore     Decimal?      @default(100.00) @map("safety_score") @db.Decimal(5, 2)
+  status          DriverStatus? @default(AVAILABLE)
+  createdAt       DateTime?     @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt       DateTime?     @default(now()) @updatedAt @map("updated_at") @db.Timestamp(6)
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@map("drivers")
+}
+
+model Vehicle {
+  id                 Int            @id @default(autoincrement())
+  registrationNumber String         @unique @map("registration_number") @db.VarChar(30)
+  name               String         @db.VarChar(100)
+  model              String?        @db.VarChar(100)
+  type               String?        @db.VarChar(50)
+  capacityKg         Decimal        @map("capacity_kg") @db.Decimal(10, 2)
+  currentOdometer    Decimal?       @default(0) @map("current_odometer") @db.Decimal(12, 2)
+  purchasePrice      Decimal?       @map("purchase_price") @db.Decimal(12, 2)
+  purchaseDate       DateTime?      @map("purchase_date") @db.Date
+  status             VehicleStatus? @default(AVAILABLE)
+  createdAt          DateTime?      @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt          DateTime?      @default(now()) @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  @@map("vehicles")
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+
+  @@map("user_status")
+}
+
+enum DriverStatus {
+  AVAILABLE
+  ON_TRIP
+  OFF_DUTY
+  SUSPENDED
+
+  @@map("driver_status")
+}
+
+enum VehicleStatus {
+  AVAILABLE
+  ON_TRIP
+  IN_SHOP
+  RETIRED
+
+  @@map("vehicle_status")
+}
+
+enum maintenance_status {
+  OPEN
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum trip_status {
+  DRAFT
+  DISPATCHED
+  COMPLETED
+  CANCELLED
+}
