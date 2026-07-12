@@ -14,6 +14,8 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, permis
   const { hasPermission } = usePermission();
   const location = useLocation();
 
+  console.log('[ProtectedRoute] path:', location.pathname, 'isAuthenticated:', isAuthenticated, 'isLoading:', isLoading, 'permissionNeeded:', permission);
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-[#0F0F10] text-white flex flex-col items-center justify-center font-mono">
@@ -24,12 +26,15 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, permis
   }
 
   if (!isAuthenticated) {
+    console.warn('[ProtectedRoute] Not authenticated, redirecting to /login from:', location.pathname);
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   if (permission && !hasPermission(permission)) {
+    console.warn('[ProtectedRoute] Unauthorized! Missing permission:', permission, 'Redirecting to /unauthorized');
     return <Navigate to="/unauthorized" replace />;
   }
 
+  console.log('[ProtectedRoute] Access granted to path:', location.pathname);
   return children;
 };

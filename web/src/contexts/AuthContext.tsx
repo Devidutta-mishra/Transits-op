@@ -22,13 +22,18 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const restoreSession = () => {
       try {
         const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
+        console.log('[Auth] Restoring session, found stored data:', stored);
         if (stored) {
           const parsed = JSON.parse(stored) as User;
           if (parsed && parsed.id && parsed.role) {
+            console.log('[Auth] Successfully restored user:', parsed);
             setUser(parsed);
+          } else {
+            console.warn('[Auth] Stored user data is invalid:', parsed);
           }
         }
       } catch (e) {
+        console.error('[Auth] Error restoring session:', e);
         localStorage.removeItem(LOCAL_STORAGE_KEY);
       } finally {
         setIsLoading(false);
@@ -40,11 +45,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const login = async (email: string, password: string, selectedRole: Role) => {
     setIsLoading(true);
+    console.log('[Auth] Attempting login for:', email, 'with role:', selectedRole);
     try {
       const authenticatedUser = await mockAuthService.login(email, password, selectedRole);
+      console.log('[Auth] Login API success, returned user:', authenticatedUser);
       setUser(authenticatedUser);
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(authenticatedUser));
     } catch (error) {
+      console.error('[Auth] Login failed:', error);
       setUser(null);
       localStorage.removeItem(LOCAL_STORAGE_KEY);
       throw error;
@@ -54,6 +62,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const logout = () => {
+    console.log('[Auth] Logging out user');
     setUser(null);
     localStorage.removeItem(LOCAL_STORAGE_KEY);
   };

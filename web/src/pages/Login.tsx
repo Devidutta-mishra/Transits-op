@@ -11,7 +11,7 @@ import { ShieldAlert, CircleHelp, Truck, ShieldCheck, Navigation, Wrench, Dollar
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const loginSchema = z.object({
-  role: z.enum(['FLEET_MANAGER', 'DISPATCHER', 'SAFETY_OFFICER', 'FINANCIAL_ANALYST'] as const, {
+  role: z.enum(['FLEET_MANAGER', 'DISPATCHER', 'SAFETY_OFFICER', 'FINANCIAL_ANALYST', 'ADMINISTRATOR'] as const, {
     message: 'Role selection is required.',
   }),
   email: z.string().min(1, 'Email is required.').email('Email must be valid.'),
@@ -36,6 +36,7 @@ export const Login: React.FC = () => {
     { value: 'DISPATCHER', label: ROLE_LABELS.DISPATCHER },
     { value: 'SAFETY_OFFICER', label: ROLE_LABELS.SAFETY_OFFICER },
     { value: 'FINANCIAL_ANALYST', label: ROLE_LABELS.FINANCIAL_ANALYST },
+    { value: 'ADMINISTRATOR', label: ROLE_LABELS.ADMINISTRATOR },
   ];
 
   const {

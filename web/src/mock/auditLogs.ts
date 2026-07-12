@@ -1,0 +1,133 @@
+export interface AuditLog {
+  logId: string;
+  timestamp: string; // YYYY-MM-DD HH:MM:SS
+  user: string; // Name of user
+  module: 'Authentication' | 'Vehicles' | 'Drivers' | 'Trips' | 'Maintenance' | 'Fuel & Expenses' | 'Reports' | 'Administration';
+  action: 'LOGIN' | 'LOGOUT' | 'CREATE' | 'UPDATE' | 'DELETE' | 'APPROVE' | 'REJECT' | 'EXPORT' | 'SETTINGS_CHANGE';
+  description: string;
+  ipAddress: string;
+  status: 'Success' | 'Failed' | 'Warning';
+}
+
+export const mockAuditLogs: AuditLog[] = [
+  {
+    logId: 'AUD-99214',
+    timestamp: '2026-07-12 11:53:36',
+    user: 'Devidutta Mishra',
+    module: 'Administration',
+    action: 'SETTINGS_CHANGE',
+    description: 'Updated system security session timeout parameters to 30 minutes.',
+    ipAddress: '192.168.1.104',
+    status: 'Success',
+  },
+  {
+    logId: 'AUD-99213',
+    timestamp: '2026-07-12 11:51:24',
+    user: 'David Chen',
+    module: 'Fuel & Expenses',
+    action: 'APPROVE',
+    description: 'Approved expense record EXP-2026-0002 for brake repairs (₹8,400).',
+    ipAddress: '192.168.1.112',
+    status: 'Success',
+  },
+  {
+    logId: 'AUD-99212',
+    timestamp: '2026-07-12 11:50:54',
+    user: 'Devidutta Mishra',
+    module: 'Authentication',
+    action: 'LOGIN',
+    description: 'Successful administrative login via password authentication.',
+    ipAddress: '192.168.1.104',
+    status: 'Success',
+  },
+  {
+    logId: 'AUD-99211',
+    timestamp: '2026-07-12 11:34:02',
+    user: 'Sarah Jenkins',
+    module: 'Authentication',
+    action: 'LOGIN',
+    description: 'Successful manager login via password credentials.',
+    ipAddress: '192.168.1.101',
+    status: 'Success',
+  },
+  {
+    logId: 'AUD-99210',
+    timestamp: '2026-07-12 11:12:44',
+    user: 'Marcus Vance',
+    module: 'Fuel & Expenses',
+    action: 'CREATE',
+    description: 'Logged fuel fill-up log FLG-2026-0001 (80L) for vehicle MH-12-PQ-4567.',
+    ipAddress: '192.168.1.105',
+    status: 'Success',
+  },
+  {
+    logId: 'AUD-99209',
+    timestamp: '2026-07-12 10:45:00',
+    user: 'Sarah Jenkins',
+    module: 'Maintenance',
+    action: 'CREATE',
+    description: 'Scheduled preventive coolant flush service for vehicle DL-3C-EF-5566.',
+    ipAddress: '192.168.1.101',
+    status: 'Success',
+  },
+  {
+    logId: 'AUD-99208',
+    timestamp: '2026-07-12 10:15:44',
+    user: 'Marcus Vance',
+    module: 'Authentication',
+    action: 'LOGIN',
+    description: 'Successful dispatcher login via password credentials.',
+    ipAddress: '192.168.1.105',
+    status: 'Success',
+  },
+  {
+    logId: 'AUD-99207',
+    timestamp: '2026-07-12 09:44:11',
+    user: 'Elena Rostova',
+    module: 'Authentication',
+    action: 'LOGIN',
+    description: 'Successful safety officer login via password credentials.',
+    ipAddress: '192.168.1.108',
+    status: 'Success',
+  },
+  {
+    logId: 'AUD-99206',
+    timestamp: '2026-07-12 09:12:30',
+    user: 'David Chen',
+    module: 'Reports',
+    action: 'EXPORT',
+    description: 'Exported quarterly fleet cost analysis Excel workbook.',
+    ipAddress: '192.168.1.112',
+    status: 'Success',
+  },
+  {
+    logId: 'AUD-99205',
+    timestamp: '2026-07-11 18:32:00',
+    user: 'Sarah Jenkins',
+    module: 'Trips',
+    action: 'CREATE',
+    description: 'Created dispatch trip record TRP-2026-0001 (Mumbai to Pune).',
+    ipAddress: '192.168.1.101',
+    status: 'Success',
+  },
+  {
+    logId: 'AUD-99204',
+    timestamp: '2026-07-11 16:15:22',
+    user: 'David Chen',
+    module: 'Authentication',
+    action: 'LOGIN',
+    description: 'Failed login attempt: incorrect password credentials hash.',
+    ipAddress: '192.168.1.112',
+    status: 'Failed',
+  },
+  {
+    logId: 'AUD-99203',
+    timestamp: '2026-07-11 14:02:11',
+    user: 'Elena Rostova',
+    module: 'Drivers',
+    action: 'UPDATE',
+    description: 'Updated license status of driver Rajesh Kumar to Active.',
+    ipAddress: '192.168.1.108',
+    status: 'Success',
+  },
+];

@@ -1,4 +1,4 @@
-export type Role = 'FLEET_MANAGER' | 'DISPATCHER' | 'SAFETY_OFFICER' | 'FINANCIAL_ANALYST';
+export type Role = 'FLEET_MANAGER' | 'DISPATCHER' | 'SAFETY_OFFICER' | 'FINANCIAL_ANALYST' | 'ADMINISTRATOR';
 
 export type Permission = 
   | 'view:dashboard'
