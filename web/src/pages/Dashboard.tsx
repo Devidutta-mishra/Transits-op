@@ -52,6 +52,7 @@ export const Dashboard: React.FC = () => {
 
   const showStatCard = (cardId: string): boolean => {
     switch (role) {
+      case 'ADMINISTRATOR':
       case 'FLEET_MANAGER':
         return true;
       case 'DISPATCHER':
@@ -67,11 +68,11 @@ export const Dashboard: React.FC = () => {
 
   const getQuickActions = () => {
     const allActions = [
-      { name: 'Register Vehicle', path: '/fleet', role: ['FLEET_MANAGER'] },
-      { name: 'Assign Driver', path: '/drivers', role: ['FLEET_MANAGER', 'DISPATCHER'] },
-      { name: 'Create Trip', path: '/trips', role: ['FLEET_MANAGER', 'DISPATCHER'] },
-      { name: 'Add Fuel Log', path: '/fuel', role: ['FLEET_MANAGER', 'FINANCIAL_ANALYST'] },
-      { name: 'Schedule Maintenance', path: '/maintenance', role: ['FLEET_MANAGER', 'SAFETY_OFFICER'] },
+      { name: 'Register Vehicle', path: '/fleet', role: ['ADMINISTRATOR', 'FLEET_MANAGER'] },
+      { name: 'Assign Driver', path: '/drivers', role: ['ADMINISTRATOR', 'FLEET_MANAGER', 'DISPATCHER'] },
+      { name: 'Create Trip', path: '/trips', role: ['ADMINISTRATOR', 'FLEET_MANAGER', 'DISPATCHER'] },
+      { name: 'Add Fuel Log', path: '/fuel', role: ['ADMINISTRATOR', 'FLEET_MANAGER', 'FINANCIAL_ANALYST'] },
+      { name: 'Schedule Maintenance', path: '/maintenance', role: ['ADMINISTRATOR', 'FLEET_MANAGER', 'SAFETY_OFFICER'] },
     ];
     return allActions.filter(action => action.role.includes(role));
   };
@@ -120,9 +121,9 @@ export const Dashboard: React.FC = () => {
     return list;
   };
 
-  const showOperationalDecks = role === 'FLEET_MANAGER' || role === 'DISPATCHER';
-  const showFinancialDecks = role === 'FLEET_MANAGER' || role === 'FINANCIAL_ANALYST';
-  const showSafetyDecks = role === 'SAFETY_OFFICER';
+  const showOperationalDecks = role === 'ADMINISTRATOR' || role === 'FLEET_MANAGER' || role === 'DISPATCHER';
+  const showFinancialDecks = role === 'ADMINISTRATOR' || role === 'FLEET_MANAGER' || role === 'FINANCIAL_ANALYST';
+  const showSafetyDecks = role === 'ADMINISTRATOR' || role === 'SAFETY_OFFICER';
 
   return (
     <div className="flex flex-col gap-6 text-left select-none font-sans">
