@@ -51,3 +51,11 @@ We are proud students from the **Odisha University of Technology and Research (O
 - **Devidutta Mishra** (Team Leader)
 - **Sibaditya Panda** (Team Member)
 - **Swastik Ranjan Sahoo** (Team Member)
+
+Photos--
+<img width="1600" height="899" alt="WhatsApp Image 2026-07-12 at 4 59 07 PM" src="https://github.com/user-attachments/assets/006b6024-d840-4d66-8339-06b8abfd8445" />
+<img width="1600" height="899" alt="WhatsApp Image 2026-07-12 at 4 59 24 PM" src="https://github.com/user-attachments/assets/be610cde-7c4d-4724-9c38-cb06599f0715" />
+<img width="1600" height="899" alt="WhatsApp Image 2026-07-12 at 4 59 25 PM" src="https://github.com/user-attachments/assets/e5cdcf1c-44e2-4131-818a-f89c2373a078" />
+<img width="277" height="557" alt="Screenshot 2026-07-12 at 4 53 13 PM" src="https://github.com/user-attachments/assets/205c825f-409d-41f5-bd6c-3e6f6a84a73c" />
+<img width="277" height="557" alt="Screenshot 2026-07-12 at 4 52 58 PM" src="https://github.com/user-attachments/assets/2fd44dfb-7380-45f2-a1b8-e96d1796c2d6" />
+
