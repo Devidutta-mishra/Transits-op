@@ -6,6 +6,9 @@ import { NotFound } from '../pages/NotFound';
 import { Dashboard } from '../pages/Dashboard';
 import { PlaceholderPage } from '../pages/PlaceholderPage';
 import { VehicleRegistry } from '../pages/VehicleRegistry';
+import { DriverManagement } from '../pages/DriverManagement';
+import { TripManagement } from '../pages/TripManagement';
+import { MaintenanceManagement } from '../pages/MaintenanceManagement';
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import { ProtectedRoute } from './ProtectedRoute';
 import { useAuth } from '../hooks/useAuth';
@@ -60,7 +63,7 @@ export const AppRoutes: React.FC = () => {
           path="drivers" 
           element={
             <ProtectedRoute permission="view:drivers">
-              <PlaceholderPage title="Driver Roster" moduleName="Drivers" />
+              <DriverManagement />
             </ProtectedRoute>
           } 
         />
@@ -68,7 +71,7 @@ export const AppRoutes: React.FC = () => {
           path="trips" 
           element={
             <ProtectedRoute permission="view:trips">
-              <PlaceholderPage title="Active Trips & Dispatch Console" moduleName="Trips" />
+              <TripManagement />
             </ProtectedRoute>
           } 
         />
@@ -76,7 +79,7 @@ export const AppRoutes: React.FC = () => {
           path="maintenance" 
           element={
             <ProtectedRoute permission="view:maintenance">
-              <PlaceholderPage title="Maintenance Logistics" moduleName="Maintenance" />
+              <MaintenanceManagement />
             </ProtectedRoute>
           } 
         />

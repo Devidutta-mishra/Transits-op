@@ -1,0 +1,207 @@
+export type LicenseCategory = 'Heavy' | 'Light' | 'Hazardous';
+export type DriverStatus = 'Available' | 'On Trip' | 'Off Duty' | 'Suspended';
+export type GenderType = 'Male' | 'Female' | 'Other';
+
+export interface Driver {
+  driverId: string;
+  fullName: string;
+  email: string;
+  phoneNumber: string;
+  dateOfBirth: string; // YYYY-MM-DD
+  gender: GenderType;
+  address: string;
+  emergencyContact: string;
+  licenseNumber: string;
+  licenseCategory: LicenseCategory;
+  licenseIssueDate: string; // YYYY-MM-DD
+  licenseExpiryDate: string; // YYYY-MM-DD
+  joiningDate: string; // YYYY-MM-DD
+  yearsOfExperience: number;
+  safetyScore: number; // 0 to 100
+  assignedVehicle: string; // Registration Number
+  status: DriverStatus;
+  archived: boolean;
+}
+
+export const mockDriversData: Driver[] = [
+  {
+    driverId: 'DRV-2021-0941',
+    fullName: 'John Miller',
+    email: 'john.miller@transitops.com',
+    phoneNumber: '+91 98765 43210',
+    dateOfBirth: '1985-05-12',
+    gender: 'Male',
+    address: '42, Park Avenue, Sector 5, Salt Lake, Kolkata - 700091',
+    emergencyContact: 'Mary Miller (+91 98765 43211)',
+    licenseNumber: 'DL-1420180098211',
+    licenseCategory: 'Heavy',
+    licenseIssueDate: '2018-04-10',
+    licenseExpiryDate: '2028-04-09',
+    joiningDate: '2021-06-15',
+    yearsOfExperience: 8,
+    safetyScore: 94,
+    assignedVehicle: 'MH-12-PQ-4567',
+    status: 'On Trip',
+    archived: false,
+  },
+  {
+    driverId: 'DRV-2022-1204',
+    fullName: 'David Jones',
+    email: 'david.jones@transitops.com',
+    phoneNumber: '+91 87654 32109',
+    dateOfBirth: '1990-08-25',
+    gender: 'Male',
+    address: 'Flat 302, Sunrise Heights, HSR Layout, Bengaluru - 560102',
+    emergencyContact: 'Sarah Jones (+91 87654 32108)',
+    licenseNumber: 'DL-0920191102931',
+    licenseCategory: 'Heavy',
+    licenseIssueDate: '2019-10-15',
+    licenseExpiryDate: '2026-07-28', // Expiring in next 30 days (Current local time is 2026-07-12)
+    joiningDate: '2022-02-01',
+    yearsOfExperience: 6,
+    safetyScore: 88,
+    assignedVehicle: 'DL-1C-AB-9876',
+    status: 'Available',
+    archived: false,
+  },
+  {
+    driverId: 'DRV-2020-0382',
+    fullName: 'Mike Smith',
+    email: 'mike.smith@transitops.com',
+    phoneNumber: '+91 76543 21098',
+    dateOfBirth: '1978-11-04',
+    gender: 'Male',
+    address: 'Plot 18, Road No. 4, Jubilee Hills, Hyderabad - 500033',
+    emergencyContact: 'Jane Smith (+91 76543 21097)',
+    licenseNumber: 'DL-0220100098210',
+    licenseCategory: 'Hazardous',
+    licenseIssueDate: '2010-02-15',
+    licenseExpiryDate: '2030-02-14',
+    joiningDate: '2020-03-10',
+    yearsOfExperience: 15,
+    safetyScore: 97,
+    assignedVehicle: 'KA-03-MX-1234',
+    status: 'On Trip',
+    archived: false,
+  },
+  {
+    driverId: 'DRV-2023-0491',
+    fullName: 'Robert Garcia',
+    email: 'robert.garcia@transitops.com',
+    phoneNumber: '+91 99887 76655',
+    dateOfBirth: '1992-03-18',
+    gender: 'Male',
+    address: '15/A, Marine Drive, Mumbai - 400002',
+    emergencyContact: 'Julia Garcia (+91 99887 76654)',
+    licenseNumber: 'DL-1120200029381',
+    licenseCategory: 'Light',
+    licenseIssueDate: '2020-06-20',
+    licenseExpiryDate: '2026-06-05', // Already Expired (Current local time is 2026-07-12)
+    joiningDate: '2023-05-12',
+    yearsOfExperience: 5,
+    safetyScore: 72,
+    assignedVehicle: 'MH-43-ZZ-8899',
+    status: 'Suspended',
+    archived: false,
+  },
+  {
+    driverId: 'DRV-2022-0711',
+    fullName: 'James Wilson',
+    email: 'james.wilson@transitops.com',
+    phoneNumber: '+91 88776 65544',
+    dateOfBirth: '1988-09-30',
+    gender: 'Male',
+    address: '104, Green Glen Layout, Bellandur, Bengaluru - 560103',
+    emergencyContact: 'Helen Wilson (+91 88776 65543)',
+    licenseNumber: 'DL-0320150039210',
+    licenseCategory: 'Light',
+    licenseIssueDate: '2015-05-14',
+    licenseExpiryDate: '2026-08-05', // Expiring in next 30 days
+    joiningDate: '2022-08-10',
+    yearsOfExperience: 9,
+    safetyScore: 82,
+    assignedVehicle: 'WB-02-KK-3344',
+    status: 'Available',
+    archived: false,
+  },
+  {
+    driverId: 'DRV-2022-0520',
+    fullName: 'Elena Rostova',
+    email: 'elena.rostova@transitops.com',
+    phoneNumber: '+91 77665 54433',
+    dateOfBirth: '1995-07-15',
+    gender: 'Female',
+    address: 'Apartment 4B, Gulmohar Enclave, Noida Sector 15, UP - 201301',
+    emergencyContact: 'Yuri Rostov (+91 77665 54430)',
+    licenseNumber: 'DL-2020180092104',
+    licenseCategory: 'Heavy',
+    licenseIssueDate: '2018-08-12',
+    licenseExpiryDate: '2028-08-11',
+    joiningDate: '2022-05-22',
+    yearsOfExperience: 6,
+    safetyScore: 91,
+    assignedVehicle: 'DL-3C-EF-5566',
+    status: 'Available',
+    archived: false,
+  },
+  {
+    driverId: 'DRV-2023-0902',
+    fullName: 'David Chen',
+    email: 'david.chen@transitops.com',
+    phoneNumber: '+91 66554 43322',
+    dateOfBirth: '1991-01-22',
+    gender: 'Male',
+    address: '7C, Victoria Towers, Egmore, Chennai - 600008',
+    emergencyContact: 'Lily Chen (+91 66554 43320)',
+    licenseNumber: 'DL-1320190019283',
+    licenseCategory: 'Light',
+    licenseIssueDate: '2019-03-20',
+    licenseExpiryDate: '2029-03-19',
+    joiningDate: '2023-09-01',
+    yearsOfExperience: 5,
+    safetyScore: 68,
+    assignedVehicle: 'KA-51-AB-1122',
+    status: 'Available',
+    archived: false,
+  },
+  {
+    driverId: 'DRV-2020-0218',
+    fullName: 'Marcus Vance',
+    email: 'marcus.vance@transitops.com',
+    phoneNumber: '+91 99001 12233',
+    dateOfBirth: '1975-04-30',
+    gender: 'Male',
+    address: 'D-12, Green Park, New Delhi - 110016',
+    emergencyContact: 'Sophia Vance (+91 99001 12230)',
+    licenseNumber: 'DL-1220020081290',
+    licenseCategory: 'Heavy',
+    licenseIssueDate: '2002-05-18',
+    licenseExpiryDate: '2022-05-17', // Expired
+    joiningDate: '2020-02-18',
+    yearsOfExperience: 22,
+    safetyScore: 80,
+    assignedVehicle: 'HR-55-XY-7766',
+    status: 'Off Duty',
+    archived: false,
+  },
+  {
+    driverId: 'DRV-2024-0228',
+    fullName: 'Ravi Kumar',
+    email: 'ravi.kumar@transitops.com',
+    phoneNumber: '+91 99445 56677',
+    dateOfBirth: '1987-12-05',
+    gender: 'Male',
+    address: 'Flat 504, Neelkanth Gardens, Chembur, Mumbai - 400071',
+    emergencyContact: 'Suman Kumar (+91 99445 56670)',
+    licenseNumber: 'DL-0320110098231',
+    licenseCategory: 'Heavy',
+    licenseIssueDate: '2011-06-15',
+    licenseExpiryDate: '2031-06-14',
+    joiningDate: '2024-03-01',
+    yearsOfExperience: 12,
+    safetyScore: 85,
+    assignedVehicle: '',
+    status: 'Available',
+    archived: false,
+  },
+];
