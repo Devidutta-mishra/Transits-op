@@ -1,0 +1,58 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-black: #0F0F10;
+  --color-brand-surface: #141416;
+  --color-brand-border: #2C2C2C;
+  --color-brand-orange: #D97706;
+
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* Force rounded corners to be flat rectangular */
+  --radius-none: 0px;
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --radius-2xl: 0px;
+  --radius-3xl: 0px;
+  --radius-full: 9999px;
+}
+
+@layer base {
+  body {
+    background-color: #0F0F10;
+    color: #ffffff;
+    font-family: var(--font-sans);
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Custom input styling for autofill to blend with dark mode */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover, 
+  input:-webkit-autofill:focus, 
+  input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px #141416 inset !important;
+    -webkit-text-fill-color: #ffffff !important;
+  }
+
+  /* Custom scrollbar matching engineer layout */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #0F0F10;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #2C2C2C;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #D97706;
+  }
+}
