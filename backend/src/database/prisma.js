@@ -19,18 +19,37 @@ if (env.nodeEnv !== "production") {
 
 let databaseStatus = "disconnected";
 
-export async function connectPrisma() {
-  try {
-    await prisma.$connect();
-    await prisma.$queryRaw`SELECT 1`;
-    databaseStatus = "connected";
-    console.log("✓ Connected to Neon PostgreSQL");
-  } catch (error) {
-    databaseStatus = "disconnected";
-    console.error("Failed to connect to Neon PostgreSQL");
-    console.error(error);
-    throw error;
+function wait(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
+export async function connectPrisma({ retries = 3, retryDelayMs = 1500 } = {}) {
+  let lastError;
+
+  for (let attempt = 1; attempt <= retries; attempt += 1) {
+    try {
+      await prisma.$connect();
+      await prisma.$queryRaw`SELECT 1`;
+      databaseStatus = "connected";
+      console.log("✓ Connected to Neon PostgreSQL");
+      return true;
+    } catch (error) {
+      lastError = error;
+      databaseStatus = "disconnected";
+      console.error(
+        `Failed to connect to Neon PostgreSQL (attempt ${attempt}/${retries})`
+      );
+      console.error(error);
+
+      if (attempt < retries) {
+        await wait(retryDelayMs);
+      }
+    }
   }
+
+  throw lastError;
 }
 
 export async function disconnectPrisma() {
