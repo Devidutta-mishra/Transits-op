@@ -74,14 +74,6 @@ class DriverHomeViewModel @Inject constructor(
     }
 
     private fun toggleTask(taskId: String, isCompleted: Boolean) {
-        // Optimistic UI update
-        _uiState.update { state ->
-            val updatedTasks = state.dashboardData?.tasks?.map {
-                if (it.id == taskId) it.copy(isCompleted = isCompleted) else it
-            }
-            state.copy(
-                dashboardData = state.dashboardData?.copy(tasks = updatedTasks ?: emptyList())
-            )
-        }
+        // Optimistic UI update - Currently placeholder as backend doesn't provide tasks
     }
 }

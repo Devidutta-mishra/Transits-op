@@ -6,10 +6,25 @@ import {
 } from "./database/prisma.js";
 
 async function startServer() {
-  try {
-    await connectPrisma();
+  let server;
 
-    const server = app.listen(env.port, () => {
+  try {
+    try {
+      await connectPrisma();
+    } catch (error) {
+      if (env.nodeEnv !== "production") {
+        console.error(
+          "Starting server in degraded mode because the database is temporarily unavailable."
+        );
+        console.error(
+          "API routes that need PostgreSQL may fail until Neon becomes reachable."
+        );
+      } else {
+        throw error;
+      }
+    }
+
+    server = app.listen(env.port, () => {
       console.log(`TransitOps backend server running on port ${env.port}`);
     });
 
@@ -32,6 +47,9 @@ async function startServer() {
   } catch (error) {
     console.error("Server startup failed");
     console.error(error);
+    if (server) {
+      server.close();
+    }
     process.exit(1);
   }
 }

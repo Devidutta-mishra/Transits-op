@@ -2,6 +2,7 @@ import { Router } from "express";
 
 import {
   getDriverDashboard,
+  getWebsiteDashboard,
   getDashboardOverview,
   getFleetHealth,
   getLiveMap
@@ -44,6 +45,14 @@ router.get(
 );
 
 router.use(authorizeRoles("Admin", "Fleet Manager", "Dispatcher"));
+
+/**
+ * @openapi
+ * /api/v1/dashboard/website:
+ *   get:
+ *     summary: Get website dashboard payload
+ */
+router.get("/website", asyncHandler(getWebsiteDashboard));
 
 /**
  * @openapi

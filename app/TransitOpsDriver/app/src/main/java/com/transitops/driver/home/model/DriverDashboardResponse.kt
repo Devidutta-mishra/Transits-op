@@ -3,71 +3,92 @@ package com.transitops.driver.home.model
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class DriverDashboardResponse(
+data class DriverDashboardData(
     val driver: DriverSummaryDto,
     val vehicle: VehicleDto?,
     val currentTrip: TripDto?,
-    val stats: DriverStatsDto,
-    val tasks: List<TaskDto>,
-    val notifications: List<NotificationDto>
+    val todayStats: DriverStatsDto,
+    val notifications: DashboardNotificationsDto,
+    val quickActions: QuickActionsDto,
+    val vehicleHealth: VehicleHealthDto
 )
 
 @Serializable
 data class DriverSummaryDto(
-    val id: String,
-    val name: String,
-    val employeeId: String,
-    val profileImageUrl: String?,
-    val isOnline: Boolean
+    val id: Int,
+    val fullName: String,
+    val employeeId: String?,
+    val profilePhoto: String?,
+    val role: String,
+    val onlineStatus: String,
+    val rating: Int,
+    val phone: String
 )
 
 @Serializable
 data class VehicleDto(
-    val id: String,
-    val name: String,
-    val plateNumber: String,
-    val fuelLevel: Float, // 0.0 to 1.0
+    val id: Int,
+    val registrationNumber: String,
+    val model: String,
+    val manufacturer: String,
+    val fuelLevel: Float?,
+    val odometer: Int,
+    val status: String,
     val healthStatus: String,
-    val tyrePressure: String,
-    val engineStatus: String,
-    val batteryStatus: String,
-    val lastService: String
+    val insuranceExpiry: String?,
+    val serviceDueDate: String?
 )
 
 @Serializable
 data class TripDto(
-    val id: String,
+    val id: Int,
     val tripNumber: String,
-    val pickupLocation: String,
+    val status: String,
+    val pickup: String,
     val destination: String,
-    val destinationLat: Double,
-    val destinationLng: Double,
     val scheduledStart: String,
     val estimatedArrival: String,
-    val status: String, // "ASSIGNED", "STARTED", "COMPLETED"
-    val progress: Float // 0.0 to 1.0
+    val distanceRemaining: Double,
+    val progressPercentage: Float?
 )
 
 @Serializable
 data class DriverStatsDto(
-    val todayDistance: String,
     val tripsCompleted: Int,
-    val currentShift: String
+    val distanceTravelled: Double,
+    val workingHours: Double,
+    val fuelConsumed: Double
 )
 
 @Serializable
-data class TaskDto(
-    val id: String,
-    val title: String,
-    val isCompleted: Boolean
+data class DashboardNotificationsDto(
+    val unreadCount: Int,
+    val latest: List<NotificationDto>
 )
 
 @Serializable
 data class NotificationDto(
-    val id: String,
-    val title: String,
-    val description: String,
-    val timestamp: String,
-    val isRead: Boolean,
-    val type: String // "TRIP", "MAINTENANCE", "TRAFFIC"
+    val id: Int? = null,
+    val title: String? = null,
+    val description: String? = null,
+    val timestamp: String? = null,
+    val isRead: Boolean? = null,
+    val type: String? = null
+)
+
+@Serializable
+data class QuickActionsDto(
+    val canStartTrip: Boolean,
+    val canEndTrip: Boolean,
+    val canReportIssue: Boolean,
+    val canNavigate: Boolean
+)
+
+@Serializable
+data class VehicleHealthDto(
+    val engine: String?,
+    val battery: String?,
+    val tyres: String?,
+    val brakes: String?,
+    val overallScore: Int
 )

@@ -5,6 +5,7 @@ import com.transitops.driver.auth.api.AuthApi
 import com.transitops.driver.core.network.ApiClient
 import com.transitops.driver.core.network.AuthInterceptor
 import com.transitops.driver.home.api.DriverDashboardApi
+import com.transitops.driver.trips.api.TripApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -73,5 +74,11 @@ object NetworkModule {
     @Singleton
     fun provideDriverDashboardApi(retrofit: Retrofit): DriverDashboardApi {
         return retrofit.create(DriverDashboardApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideTripApi(retrofit: Retrofit): TripApi {
+        return retrofit.create(TripApi::class.java)
     }
 }

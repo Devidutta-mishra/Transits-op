@@ -14,38 +14,44 @@ function baseTripSelect() {
     SELECT
       t.id,
       t.trip_number AS "tripNumber",
-      t.origin,
-      t.destination,
-      t.intermediate_stops AS "intermediateStops",
+      t.pickup_name AS origin,
+      t.pickup_address AS "pickupAddress",
+      t.pickup_latitude AS "pickupLatitude",
+      t.pickup_longitude AS "pickupLongitude",
+      t.destination_name AS destination,
+      t.destination_address AS "destinationAddress",
+      t.destination_latitude AS "destinationLatitude",
+      t.destination_longitude AS "destinationLongitude",
       t.scheduled_start AS "scheduledStart",
       t.actual_start AS "actualStart",
       t.estimated_arrival AS "estimatedArrival",
       t.actual_arrival AS "actualArrival",
-      t.route_distance AS "routeDistance",
-      t.current_latitude AS "currentLatitude",
-      t.current_longitude AS "currentLongitude",
+      t.distance_km AS "routeDistance",
       t.status,
-      t.fuel_consumed AS "fuelConsumed",
-      t.notes,
+      t.priority,
+      t.cargo_type AS "cargoType",
+      t.remarks AS notes,
       t.created_at AS "createdAt",
       t.updated_at AS "updatedAt",
       json_build_object(
-        'latitude', t.current_latitude,
-        'longitude', t.current_longitude
+        'latitude', t.pickup_latitude,
+        'longitude', t.pickup_longitude
       ) AS "currentLocation",
       json_build_object(
         'id', v.id,
         'registrationNumber', v.registration_number,
+        'name', v.name,
+        'model', v.model,
         'status', v.status::text
       ) AS vehicle,
       json_build_object(
         'id', d.id,
-        'employeeId', d.employee_id,
         'status', d.status::text,
         'user', json_build_object(
           'id', u.id,
           'fullName', u.full_name,
-          'email', u.email
+          'email', u.email,
+          'phone', u.phone
         )
       ) AS driver
     FROM trips t
@@ -62,7 +68,7 @@ function buildTripFilters(params, scope = {}) {
 
   if (params.search) {
     conditions.push(
-      `(t.trip_number ILIKE $${index} OR t.origin ILIKE $${index} OR t.destination ILIKE $${index})`
+      `(t.trip_number ILIKE $${index} OR t.pickup_name ILIKE $${index} OR t.destination_name ILIKE $${index})`
     );
     values.push(`%${params.search}%`);
     index += 1;
@@ -99,6 +105,197 @@ function buildTripFilters(params, scope = {}) {
 }
 
 export class TripRepository {
+  async findCurrentByDriverUserId(userId) {
+    const { rows } = await query(
+      `
+        SELECT
+          t.id,
+          t.trip_number AS "tripNumber",
+          t.status,
+          t.pickup_name AS origin,
+          t.pickup_address AS "pickupAddress",
+          t.pickup_latitude AS "pickupLatitude",
+          t.pickup_longitude AS "pickupLongitude",
+          t.destination_name AS destination,
+          t.destination_address AS "destinationAddress",
+          t.destination_latitude AS "destinationLatitude",
+          t.destination_longitude AS "destinationLongitude",
+          t.scheduled_start AS "scheduledStart",
+          t.actual_start AS "actualStart",
+          t.estimated_arrival AS "estimatedArrival",
+          t.actual_arrival AS "actualArrival",
+          t.distance_km AS "routeDistance",
+          t.priority,
+          t.cargo_type AS "cargoType",
+          t.remarks AS notes,
+          t.created_at AS "createdAt",
+          t.updated_at AS "updatedAt",
+          json_build_object(
+            'latitude', t.pickup_latitude,
+            'longitude', t.pickup_longitude
+          ) AS "currentLocation",
+          json_build_object(
+            'id', v.id,
+            'registrationNumber', v.registration_number,
+            'name', v.name,
+            'model', v.model,
+            'status', v.status::text
+          ) AS vehicle,
+          json_build_object(
+            'id', d.id,
+            'status', d.status::text,
+            'user', json_build_object(
+              'id', u.id,
+              'fullName', u.full_name,
+              'email', u.email,
+              'phone', u.phone
+            )
+          ) AS driver
+        FROM trips t
+        INNER JOIN drivers d ON d.id = t.driver_id
+        INNER JOIN users u ON u.id = d.user_id
+        LEFT JOIN vehicles v ON v.id = t.vehicle_id
+        WHERE d.user_id = $1
+          AND LOWER(t.status) IN ('assigned', 'started', 'in_progress')
+        ORDER BY
+          CASE LOWER(t.status)
+            WHEN 'started' THEN 1
+            WHEN 'in_progress' THEN 2
+            WHEN 'assigned' THEN 3
+            ELSE 4
+          END,
+          t.scheduled_start ASC,
+          t.id DESC
+        LIMIT 1
+      `,
+      [userId]
+    );
+
+    return rows[0] || null;
+  }
+
+  async listByDriverUserId(userId, params = {}) {
+    const pagination = getPagination(params);
+    const values = [userId];
+    let index = values.length + 1;
+    const conditions = [`d.user_id = $1`];
+
+    if (params.status) {
+      conditions.push(`LOWER(t.status) = LOWER($${index})`);
+      values.push(params.status);
+      index += 1;
+    }
+
+    if (params.search) {
+      conditions.push(
+        `(t.trip_number ILIKE $${index} OR t.pickup_name ILIKE $${index} OR t.destination_name ILIKE $${index})`
+      );
+      values.push(`%${params.search}%`);
+      index += 1;
+    }
+
+    const whereClause = `WHERE ${conditions.join(" AND ")}`;
+    const sortClause = getSortClause(
+      params.sortBy,
+      params.sortOrder,
+      {
+        createdAt: "t.created_at",
+        scheduledStart: "t.scheduled_start",
+        estimatedArrival: "t.estimated_arrival",
+        status: "t.status",
+        tripNumber: "t.trip_number"
+      },
+      "t.scheduled_start"
+    );
+
+    const { rows } = await query(
+      `
+        SELECT
+          t.id,
+          t.trip_number AS "tripNumber",
+          t.status,
+          t.pickup_name AS origin,
+          t.destination_name AS destination,
+          t.scheduled_start AS "scheduledStart",
+          t.actual_start AS "actualStart",
+          t.estimated_arrival AS "estimatedArrival",
+          t.actual_arrival AS "actualArrival",
+          t.distance_km AS "routeDistance",
+          t.priority,
+          t.cargo_type AS "cargoType",
+          t.remarks AS notes,
+          t.created_at AS "createdAt",
+          t.updated_at AS "updatedAt",
+          json_build_object(
+            'id', v.id,
+            'registrationNumber', v.registration_number,
+            'name', v.name,
+            'model', v.model,
+            'status', v.status::text
+          ) AS vehicle
+        FROM trips t
+        INNER JOIN drivers d ON d.id = t.driver_id
+        LEFT JOIN vehicles v ON v.id = t.vehicle_id
+        ${whereClause}
+        ORDER BY ${sortClause}
+        LIMIT $${index}
+        OFFSET $${index + 1}
+      `,
+      [...values, pagination.limit, pagination.offset]
+    );
+
+    const countResult = await query(
+      `
+        SELECT COUNT(*)::int AS total
+        FROM trips t
+        INNER JOIN drivers d ON d.id = t.driver_id
+        ${whereClause}
+      `,
+      values
+    );
+
+    return {
+      items: rows,
+      total: countResult.rows[0].total,
+      ...pagination
+    };
+  }
+
+  async updateDriverTripStatusByUserId(id, userId, status, timestamps = {}) {
+    const fields = [`status = $1`, `updated_at = CURRENT_TIMESTAMP`];
+    const values = [status];
+    let index = 2;
+
+    if (timestamps.actualStart !== undefined) {
+      fields.push(`actual_start = $${index}`);
+      values.push(timestamps.actualStart);
+      index += 1;
+    }
+
+    if (timestamps.actualArrival !== undefined) {
+      fields.push(`actual_arrival = $${index}`);
+      values.push(timestamps.actualArrival);
+      index += 1;
+    }
+
+    values.push(id, userId);
+
+    const { rows } = await query(
+      `
+        UPDATE trips t
+        SET ${fields.join(", ")}
+        FROM drivers d
+        WHERE t.driver_id = d.id
+          AND t.id = $${index}
+          AND d.user_id = $${index + 1}
+        RETURNING t.id
+      `,
+      values
+    );
+
+    return rows[0] ? this.findById(rows[0].id) : null;
+  }
+
   async create(client, payload) {
     const executor = client || { query };
     const { rows } = await executor.query(

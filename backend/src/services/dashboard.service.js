@@ -7,6 +7,10 @@ function toNumber(value) {
   return value === null || value === undefined ? null : Number(value);
 }
 
+function normalizeStatus(value) {
+  return String(value || "").toLowerCase();
+}
+
 function calculateWorkingHours(trips) {
   const totalMilliseconds = trips.reduce((sum, trip) => {
     const start = trip.actualStart || trip.scheduledStart;
@@ -84,9 +88,9 @@ function buildCurrentTrip(currentTrip) {
 
   const routeDistance = toNumber(currentTrip.routeDistance);
   const progressPercentage =
-    currentTrip.status === "completed"
+    normalizeStatus(currentTrip.status) === "completed"
       ? 100
-      : currentTrip.status === "assigned" || currentTrip.status === "scheduled"
+      : ["assigned", "scheduled"].includes(normalizeStatus(currentTrip.status))
         ? 0
         : null;
 
@@ -124,7 +128,9 @@ export class DashboardService {
         employeeId: driver.employeeId,
         profilePhoto: null,
         role: driver.user.role.name,
-        onlineStatus: ["ASSIGNED", "ON_TRIP", "ON_DUTY"].includes(driver.status)
+        onlineStatus: ["assigned", "on_trip", "on_duty", "started", "in_progress"].includes(
+          normalizeStatus(driver.status)
+        )
           ? "online"
           : "offline",
         rating: toNumber(driver.rating),
@@ -160,8 +166,12 @@ export class DashboardService {
         latest: []
       },
       quickActions: {
-        canStartTrip: activeTrip ? ["assigned", "scheduled"].includes(activeTrip.status) : false,
-        canEndTrip: activeTrip ? ["started", "in_progress"].includes(activeTrip.status) : false,
+        canStartTrip: activeTrip
+          ? ["assigned", "scheduled"].includes(normalizeStatus(activeTrip.status))
+          : false,
+        canEndTrip: activeTrip
+          ? ["started", "in_progress"].includes(normalizeStatus(activeTrip.status))
+          : false,
         canReportIssue: Boolean(driver.assignedVehicle),
         canNavigate: Boolean(activeTrip)
       },
@@ -171,6 +181,10 @@ export class DashboardService {
 
   async getOverview() {
     return dashboardRepository.getOverview();
+  }
+
+  async getWebsiteDashboard() {
+    return dashboardRepository.getWebsiteDashboard();
   }
 
   async getFleetHealth() {

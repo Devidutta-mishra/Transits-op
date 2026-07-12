@@ -37,6 +37,13 @@ export const updateTripStatusValidator = [
   body("status").isIn(["scheduled", "assigned", "started", "in_progress", "completed", "cancelled"]).withMessage("Invalid trip status")
 ];
 
+export const driverTripStatusValidator = [
+  param("id").isInt({ min: 1 }).withMessage("Trip ID must be valid"),
+  body("status")
+    .isIn(["started", "completed"])
+    .withMessage("Driver can only set status to started or completed")
+];
+
 export const assignDriverToTripValidator = [
   param("id").isInt({ min: 1 }).withMessage("Trip ID must be valid"),
   body("driverId").isInt({ min: 1 }).withMessage("Driver ID must be valid")

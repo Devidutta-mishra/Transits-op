@@ -58,7 +58,7 @@ fun CurrentTripCard(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            LocationItem(label = "Pickup", address = trip.pickupLocation, isPrimary = true)
+            LocationItem(label = "Pickup", address = trip.pickup, isPrimary = true)
             
             Box(modifier = Modifier.padding(start = 12.dp).height(24.dp).width(1.dp).background(MaterialTheme.colorScheme.outlineVariant))
             
@@ -73,13 +73,14 @@ fun CurrentTripCard(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            val progress = trip.progressPercentage ?: 0f
             Text(
-                text = "Progress: ${(trip.progress * 100).toInt()}%",
+                text = "Progress: ${(progress * 100).toInt()}%",
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.outline
             )
             LinearProgressIndicator(
-                progress = { trip.progress },
+                progress = { progress },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)
@@ -98,7 +99,7 @@ fun CurrentTripCard(
                 Icon(Icons.Default.Navigation, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = if (trip.status == "STARTED") "CONTINUE TRIP" else "START TRIP",
+                    text = if (trip.status == "Started") "CONTINUE TRIP" else "START TRIP",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
                 )

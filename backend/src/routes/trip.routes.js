@@ -4,9 +4,12 @@ import {
   assignDriverToTrip,
   assignVehicleToTrip,
   createTrip,
+  getCurrentTrip,
+  getMyTrips,
   getTripById,
   getTrips,
   updateTrip,
+  updateMyTripStatus,
   updateTripStatus
 } from "../controllers/trip.controller.js";
 import { authenticateToken } from "../middleware/auth.middleware.js";
@@ -17,6 +20,7 @@ import {
   assignDriverToTripValidator,
   assignVehicleToTripValidator,
   createTripValidator,
+  driverTripStatusValidator,
   tripIdParamValidator,
   tripListValidator,
   updateTripStatusValidator,
@@ -43,6 +47,46 @@ router.post(
   asyncHandler(createTrip)
 );
 router.get("/", tripListValidator, validateRequest, asyncHandler(getTrips));
+
+/**
+ * @openapi
+ * /api/v1/trips/current:
+ *   get:
+ *     summary: Get the authenticated driver's current trip
+ */
+router.get(
+  "/current",
+  authorizeRoles("Driver"),
+  asyncHandler(getCurrentTrip)
+);
+
+/**
+ * @openapi
+ * /api/v1/trips/my:
+ *   get:
+ *     summary: List trips assigned to the authenticated driver
+ */
+router.get(
+  "/my",
+  authorizeRoles("Driver"),
+  tripListValidator,
+  validateRequest,
+  asyncHandler(getMyTrips)
+);
+
+/**
+ * @openapi
+ * /api/v1/trips/{id}/driver-status:
+ *   patch:
+ *     summary: Update the authenticated driver's trip status
+ */
+router.patch(
+  "/:id/driver-status",
+  authorizeRoles("Driver"),
+  driverTripStatusValidator,
+  validateRequest,
+  asyncHandler(updateMyTripStatus)
+);
 
 /**
  * @openapi

@@ -31,7 +31,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(morgan("dev"));
 
-app.get("/health", async (_req, res) => {
+async function healthCheckHandler(_req, res) {
   const database = await checkDatabaseConnection();
   const statusCode = database === "connected" ? 200 : 503;
 
@@ -40,7 +40,10 @@ app.get("/health", async (_req, res) => {
     database,
     environment: env.nodeEnv
   });
-});
+}
+
+app.get("/health", healthCheckHandler);
+app.get("/api/health", healthCheckHandler);
 
 app.use("/api/auth", authRoutes);
 app.use("/api/v1/auth", authRoutes);

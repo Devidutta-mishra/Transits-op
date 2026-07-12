@@ -11,6 +11,16 @@ export async function getTrips(req, res) {
   return res.status(200).json(successResponse(trips, "Trips fetched successfully"));
 }
 
+export async function getCurrentTrip(req, res) {
+  const trip = await tripService.getCurrentTripForDriver(req.user.userId);
+  return res.status(200).json(successResponse(trip, "Current trip fetched successfully"));
+}
+
+export async function getMyTrips(req, res) {
+  const trips = await tripService.listMyTrips(req.user.userId, req.query);
+  return res.status(200).json(successResponse(trips, "Driver trips fetched successfully"));
+}
+
 export async function getTripById(req, res) {
   const trip = await tripService.getTripById(req.params.id, req.user);
   return res.status(200).json(successResponse(trip, "Trip fetched successfully"));
@@ -23,6 +33,15 @@ export async function updateTrip(req, res) {
 
 export async function updateTripStatus(req, res) {
   const trip = await tripService.updateTripStatus(req.params.id, req.body.status);
+  return res.status(200).json(successResponse(trip, "Trip status updated successfully"));
+}
+
+export async function updateMyTripStatus(req, res) {
+  const trip = await tripService.updateMyTripStatus(
+    req.user.userId,
+    req.params.id,
+    req.body.status
+  );
   return res.status(200).json(successResponse(trip, "Trip status updated successfully"));
 }
 

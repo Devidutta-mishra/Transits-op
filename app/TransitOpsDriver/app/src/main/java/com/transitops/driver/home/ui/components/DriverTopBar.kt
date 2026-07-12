@@ -38,7 +38,7 @@ fun DriverTopBar(
         title = {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
-                    text = "$greeting, ${driver?.name ?: "Driver"}",
+                    text = "$greeting, ${driver?.fullName ?: "Driver"}",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -52,7 +52,7 @@ fun DriverTopBar(
         navigationIcon = {
             Box(modifier = Modifier.padding(start = 16.dp)) {
                 AsyncImage(
-                    model = driver?.profileImageUrl ?: "https://ui-avatars.com/api/?name=${driver?.name ?: "D"}&background=0D8ABC&color=fff",
+                    model = driver?.profilePhoto ?: "https://ui-avatars.com/api/?name=${driver?.fullName ?: "D"}&background=0D8ABC&color=fff",
                     contentDescription = "Profile Picture",
                     modifier = Modifier
                         .size(40.dp)
@@ -65,7 +65,7 @@ fun DriverTopBar(
                     modifier = Modifier
                         .size(12.dp)
                         .clip(CircleShape)
-                        .background(if (driver?.isOnline == true) Color.Green else Color.Gray)
+                        .background(if (driver?.onlineStatus == "online") Color.Green else Color.Gray)
                         .border(2.dp, MaterialTheme.colorScheme.surface, CircleShape)
                         .align(Alignment.BottomEnd)
                 )

@@ -10,8 +10,96 @@ const vehicleRepository = new VehicleRepository();
 const driverRepository = new DriverRepository();
 
 const ACTIVE_TRIP_STATUSES = ["scheduled", "assigned", "started", "in_progress"];
+const DRIVER_ALLOWED_STATUS_TRANSITIONS = {
+  assigned: ["started"],
+  started: ["completed"]
+};
+
+function normalizeStatus(status) {
+  return String(status || "").trim().toLowerCase();
+}
+
+function toStoredTripStatus(status) {
+  switch (normalizeStatus(status)) {
+    case "assigned":
+      return "Assigned";
+    case "started":
+      return "Started";
+    case "completed":
+      return "Completed";
+    case "cancelled":
+      return "Cancelled";
+    case "scheduled":
+      return "Scheduled";
+    case "in_progress":
+      return "In Progress";
+    default:
+      return status;
+  }
+}
 
 export class TripService {
+  async getCurrentTripForDriver(userId) {
+    const trip = await tripRepository.findCurrentByDriverUserId(userId);
+
+    if (!trip) {
+      throw new AppError("No active trip found for the driver", 404);
+    }
+
+    return trip;
+  }
+
+  async listMyTrips(userId, queryParams) {
+    const result = await tripRepository.listByDriverUserId(userId, queryParams);
+    return buildPagedResult(result.items, result.total, result.page, result.limit);
+  }
+
+  async updateMyTripStatus(userId, tripId, status) {
+    const trip = await tripRepository.findById(tripId);
+
+    if (!trip) {
+      throw new AppError("Trip not found", 404);
+    }
+
+    if (Number(trip.driver?.user?.id) !== Number(userId)) {
+      throw new AppError("You are not authorized to update this trip", 403);
+    }
+
+    const currentStatus = normalizeStatus(trip.status);
+    const nextStatus = normalizeStatus(status);
+    const allowedNextStatuses = DRIVER_ALLOWED_STATUS_TRANSITIONS[currentStatus] || [];
+
+    if (!allowedNextStatuses.includes(nextStatus)) {
+      throw new AppError(
+        `Driver cannot change trip status from ${currentStatus || "unknown"} to ${nextStatus || "unknown"}`,
+        409
+      );
+    }
+
+    const timestamps = {};
+
+    if (nextStatus === "started" && !trip.actualStart) {
+      timestamps.actualStart = new Date().toISOString();
+    }
+
+    if (nextStatus === "completed" && !trip.actualArrival) {
+      timestamps.actualArrival = new Date().toISOString();
+    }
+
+    const updatedTrip = await tripRepository.updateDriverTripStatusByUserId(
+      tripId,
+      userId,
+      toStoredTripStatus(nextStatus),
+      timestamps
+    );
+
+    if (!updatedTrip) {
+      throw new AppError("Trip not found", 404);
+    }
+
+    return updatedTrip;
+  }
+
   async createTrip(payload, user) {
     const duplicateTrip = await tripRepository.findByTripNumber(payload.tripNumber);
 
