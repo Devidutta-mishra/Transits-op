@@ -13,10 +13,10 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         disabled={disabled || isLoading}
         className={cn(
-          "inline-flex items-center justify-center font-mono text-xs uppercase tracking-widest font-semibold transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#D97706] disabled:opacity-50 disabled:cursor-not-allowed h-10 px-4 py-2 rounded-none border select-none cursor-pointer",
-          variant === 'primary' && "bg-[#D97706] text-white border-[#D97706] hover:bg-[#B45309] active:bg-[#92400E]",
-          variant === 'secondary' && "bg-[#141416] text-[#FFFFFF] border-[#2C2C2C] hover:bg-[#1C1C20] hover:border-[#8E8E93] active:bg-[#121214]",
-          variant === 'ghost' && "bg-transparent text-[#A1A1AA] border-transparent hover:bg-[#1C1C20] hover:text-white",
+          "inline-flex items-center justify-center font-sans text-xs uppercase tracking-widest font-bold transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white disabled:opacity-50 disabled:cursor-not-allowed h-12 px-6 py-3 rounded-md select-none cursor-pointer",
+          variant === 'primary' && "bg-transparent text-white border-2 border-white hover:bg-white hover:text-black active:bg-gray-200",
+          variant === 'secondary' && "bg-[#111111] text-[#FFFFFF] border-[#333333] hover:bg-[#222222] hover:border-gray-500",
+          variant === 'ghost' && "bg-transparent text-[#A3A3A3] border-transparent hover:bg-[#222222] hover:text-white",
           variant === 'danger' && "bg-[#991B1B] text-white border-[#991B1B] hover:bg-[#7F1D1D] active:bg-[#581C1C]",
           className
         )}
