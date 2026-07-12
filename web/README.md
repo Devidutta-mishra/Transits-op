@@ -20,6 +20,16 @@ The UI has been strictly engineered to follow a **Premium Monochrome Aesthetic**
 - **Icons:** Lucide React
 - **Charts:** Recharts
 
+## Screenshots
+
+| Web Console Interface |
+|:---:|
+| ![Login View](./assets/media__1783855967928.jpg) |
+| ![Dashboard View 1](./assets/media__1783855967942.jpg) |
+| ![Dashboard View 2](./assets/media__1783855967958.jpg) |
+| ![Dashboard View 3](./assets/media__1783855967973.jpg) |
+| ![Fuel & Expenses](./assets/media__1783855968026.jpg) |
+
 ## Getting Started
 
 ### Prerequisites
