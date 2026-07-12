@@ -14,7 +14,7 @@ export const Unauthorized: React.FC = () => {
         <div className="flex items-center gap-3 text-[#EF4444] mb-4">
           <ShieldAlert size={20} />
           <h1 className="text-sm font-bold uppercase tracking-wider">
-            ERROR_CODE: 403_ACCESS_DENIED
+            ERROR_CODE: 403 ACCESS DENIED
           </h1>
         </div>
 

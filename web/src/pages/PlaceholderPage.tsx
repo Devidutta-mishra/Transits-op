@@ -18,11 +18,11 @@ export const PlaceholderPage: React.FC<PlaceholderPageProps> = ({ title, moduleN
             {title}
           </h1>
           <p className="text-xs text-[#8E8E93] mt-1 tracking-wide">
-            SYSTEM_MODULE_IDENTIFIER: {moduleName.toUpperCase().replace(/ /g, '_')}_CORE_V1
+            SYSTEM MODULE IDENTIFIER: {moduleName.toUpperCase().replace(/ /g, ' ')} CORE V1
           </p>
         </div>
         <div className="text-xs text-[#8E8E93] border border-[#2C2C2C] px-3 py-1 bg-[#141416] uppercase tracking-widest">
-          ACCESS_LEVEL: {user ? ROLE_LABELS[user.role] : 'GUEST'}
+          ACCESS LEVEL: {user ? ROLE_LABELS[user.role] : 'GUEST'}
         </div>
       </div>
 
@@ -39,19 +39,19 @@ export const PlaceholderPage: React.FC<PlaceholderPageProps> = ({ title, moduleN
           <div className="mt-4 border border-[#2C2C2C] max-w-xl">
             <div className="grid grid-cols-2 bg-[#0F0F10] border-b border-[#2C2C2C] p-2 text-[10px] uppercase font-bold text-[#8E8E93] tracking-widest">
               <div>PARAMETER</div>
-              <div>STATUS_VALUE</div>
+              <div>STATUS VALUE</div>
             </div>
             <div className="grid grid-cols-2 p-2 text-xs border-b border-[#2C2C2C]/50">
-              <div className="text-[#8E8E93]">MODULE_ID</div>
+              <div className="text-[#8E8E93]">MODULE ID</div>
               <div className="text-white">MOD_{moduleName.toUpperCase().replace(/ /g, '_')}</div>
             </div>
             <div className="grid grid-cols-2 p-2 text-xs border-b border-[#2C2C2C]/50">
-              <div className="text-[#8E8E93]">ROUTING_GUARD</div>
-              <div className="text-green-500 font-bold">VERIFIED_ACTIVE</div>
+              <div className="text-[#8E8E93]">ROUTING GUARD</div>
+              <div className="text-green-500 font-bold">VERIFIED ACTIVE</div>
             </div>
             <div className="grid grid-cols-2 p-2 text-xs">
-              <div className="text-[#8E8E93]">INTERFACE_RENDER</div>
-              <div className="text-[#D97706] font-bold">FLAT_UI_ENGINEERED</div>
+              <div className="text-[#8E8E93]">INTERFACE RENDER</div>
+              <div className="text-[#D97706] font-bold">FLAT UI ENGINEERED</div>
             </div>
           </div>
         </div>

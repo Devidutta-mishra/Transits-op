@@ -157,11 +157,11 @@ export const FuelExpenseManagement: React.FC = () => {
   };
 
   const handleExportCSV = () => {
-    alert(`CSV_EXPORT_INITIATED // ${activeTab === 'fuel' ? fuelLogs.length : expenses.length} financial transactions written.`);
+    alert(`CSV EXPORT INITIATED // ${activeTab === 'fuel' ? fuelLogs.length : expenses.length} financial transactions written.`);
   };
 
   const handlePrint = () => {
-    alert('PRINT_FINANCIAL_PAYLOAD // Spooling cost reports to dispatch yard printer...');
+    alert('PRINT FINANCIAL PAYLOAD // Spooling cost reports to dispatch yard printer...');
   };
 
   const filteredFuelLogs = fuelLogs.filter(l => {
@@ -277,12 +277,12 @@ export const FuelExpenseManagement: React.FC = () => {
             FUEL & EXPENSE MANAGEMENT
           </h1>
           <p className="text-[11px] text-gray-500 mt-2 font-mono tracking-wide">
-            FLEET_COST_ACCOUNTING_CONSOLE // ENTRIES: {fuelEntriesCount + expenseRecordsCount}
+            FLEET COST ACCOUNTING CONSOLE // ENTRIES: {fuelEntriesCount + expenseRecordsCount}
           </p>
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 border-r border-[#2C2C2C] pr-4 h-8 select-none">
-            <span className="text-[10px] text-gray-500 font-mono uppercase tracking-wider">CONSOLE_ACCESS:</span>
+            <span className="text-[10px] text-gray-500 font-mono uppercase tracking-wider">CONSOLE ACCESS:</span>
             <Badge variant="orange">{ROLE_LABELS[user.role]}</Badge>
           </div>
           <div className="flex gap-2">

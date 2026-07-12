@@ -12,9 +12,9 @@ import { SectionHeader } from '../components/dashboard/SectionHeader';
 import { SkeletonLoader } from '../components/dashboard/SkeletonLoader';
 import { Badge } from '../components/ui/Badge';
 import { ROLE_LABELS } from '../constants/permissions';
-import { 
-  Truck, Users, Route, Calendar, CheckCircle2, Wrench, 
-  TrendingUp, Fuel, ShieldAlert, UserCheck, ClipboardCheck, 
+import {
+  Truck, Users, Route, Calendar, CheckCircle2, Wrench,
+  TrendingUp, Fuel, ShieldAlert, UserCheck, ClipboardCheck,
   CreditCard, Milestone, RefreshCw, ChevronRight, PlusCircle
 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
@@ -239,7 +239,7 @@ export const Dashboard: React.FC = () => {
                       <CartesianGrid strokeDasharray="3 3" stroke="#2C2C2C" vertical={false} />
                       <XAxis dataKey="month" stroke="#A1A1AA" tickLine={false} />
                       <YAxis stroke="#A1A1AA" tickLine={false} domain={[0, 100]} unit="%" />
-                      <Tooltip 
+                      <Tooltip
                         cursor={{ fill: '#1C1C20' }}
                         contentStyle={{ backgroundColor: '#111111', border: '1px solid #2C2C2C', borderRadius: '0px' }}
                         labelClassName="text-white font-mono uppercase tracking-wider font-bold"

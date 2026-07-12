@@ -33,9 +33,9 @@ export const StatCard: React.FC<StatCardProps> = ({ title, value, icon: Icon, su
           <span
             className={cn(
               "text-[10px] font-bold font-mono tracking-tighter",
-              trend.type === 'up' && "text-green-500",
-              trend.type === 'down' && "text-red-500",
-              trend.type === 'neutral' && "text-gray-500"
+              trend.type === 'up' && "text-white",
+              trend.type === 'down' && "text-[#A3A3A3]",
+              trend.type === 'neutral' && "text-[#555555]"
             )}
           >
             {trend.value}

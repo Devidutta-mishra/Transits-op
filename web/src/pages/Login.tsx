@@ -93,7 +93,7 @@ export const Login: React.FC = () => {
         <div className="flex-1 flex flex-col justify-center text-left py-12 md:py-16 gap-8">
           <div className="flex flex-col gap-3">
             <span className="text-[10px] text-[#A3A3A3] font-mono uppercase tracking-widest font-bold">
-              ALL-IN-ONE TRANSPORT OPERATIONS PLATFORM
+              ALL-IN-ONE TRANSPORT LOGISTICS HUB
             </span>
             <h1 className="text-3xl md:text-4xl font-bold uppercase tracking-wider text-white leading-tight">
               Run Your Fleet.<br />
@@ -132,7 +132,7 @@ export const Login: React.FC = () => {
           </div>
 
           <div className="w-full max-w-md h-40 border border-[#333333] bg-[#111111] p-4 flex items-center justify-center relative select-none">
-            <div className="absolute top-2 left-3 font-mono text-[8px] text-[#A3A3A3] tracking-wider">SYSTEM_DISPLAY_DECK // SIM_PORT_5173</div>
+            <div className="absolute top-2 left-3 font-mono text-[8px] text-[#A3A3A3] tracking-wider">SYSTEM DISPLAY DECK // SIM PORT 5173</div>
             <svg width="340" height="120" viewBox="0 0 340 120" fill="none" className="opacity-50">
               <path d="M 30 60 L 100 20 L 180 80 L 260 40 L 310 90" stroke="#FFFFFF" strokeWidth="1.5" strokeLinejoin="round" strokeDasharray="4 4" />
               <path d="M 30 60 L 120 100 L 180 80 L 220 10 L 310 90" stroke="#A3A3A3" strokeWidth="1" strokeLinejoin="round" />
@@ -165,7 +165,7 @@ export const Login: React.FC = () => {
               <div className="mb-4 border border-[#EF4444] bg-[#EF4444]/10 p-3 flex items-start gap-2.5">
                 <ShieldAlert size={16} className="text-[#EF4444] flex-shrink-0 mt-0.5" />
                 <div className="flex flex-col gap-0.5">
-                  <span className="text-[9px] font-bold text-[#EF4444] uppercase tracking-wider">AUTH_FAILED</span>
+                  <span className="text-[9px] font-bold text-[#EF4444] uppercase tracking-wider">AUTH FAILED</span>
                   <span className="text-[12px] text-[#EF4444] font-sans">{authError}</span>
                 </div>
               </div>

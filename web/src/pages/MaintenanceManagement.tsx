@@ -230,11 +230,11 @@ export const MaintenanceManagement: React.FC = () => {
   };
 
   const handleExportCSV = () => {
-    alert(`CSV_EXPORT_INITIATED // ${jobs.length} maintenance logs written to local disc.`);
+    alert(`CSV EXPORT INITIATED // ${jobs.length} maintenance logs written to local disc.`);
   };
 
   const handlePrint = () => {
-    alert('PRINT_SCHEDULER_GENERATED // Spooling preventive calendars to fleet yard printer...');
+    alert('PRINT SCHEDULER GENERATED // Spooling preventive calendars to fleet yard printer...');
   };
 
   const filteredJobs = jobs.filter(j => {
@@ -317,12 +317,12 @@ export const MaintenanceManagement: React.FC = () => {
             MAINTENANCE MANAGEMENT
           </h1>
           <p className="text-[11px] text-gray-500 mt-2 font-mono tracking-wide">
-            FLEET_MAINTENANCE_LOG_CONSOLE // RECORDS: {totalJobsCount}
+            FLEET MAINTENANCE LOG CONSOLE // RECORDS: {totalJobsCount}
           </p>
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 border-r border-[#2C2C2C] pr-4 h-8 select-none">
-            <span className="text-[10px] text-gray-500 font-mono uppercase tracking-wider">CONSOLE_ACCESS:</span>
+            <span className="text-[10px] text-gray-500 font-mono uppercase tracking-wider">CONSOLE ACCESS:</span>
             <Badge variant="orange">{ROLE_LABELS[user.role]}</Badge>
           </div>
           <div className="flex gap-2">

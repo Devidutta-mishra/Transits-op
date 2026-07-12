@@ -6,7 +6,7 @@ import { CommandPalette } from '../components/layout/CommandPalette';
 
 export const DashboardLayout: React.FC = () => {
   return (
-    <div className="min-h-screen bg-[#0F0F10] text-white">
+    <div className="min-h-screen bg-[#000000] text-white">
       <Topbar />
       <Sidebar />
       <main className="md:pl-60 pt-14 min-h-screen transition-all duration-200">

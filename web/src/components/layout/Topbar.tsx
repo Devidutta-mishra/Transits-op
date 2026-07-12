@@ -80,11 +80,11 @@ export const Topbar: React.FC = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 h-14 bg-[#141416] border-b border-[#2C2C2C] z-30 flex items-center justify-between px-4">
+    <header className="fixed top-0 left-0 right-0 h-14 bg-[#111111] border-b border-[#333333] z-30 flex items-center justify-between px-4">
       {/* Brand logo */}
       <div className="flex items-center gap-2">
         <Link to="/" className="flex items-center gap-2">
-          <div className="w-6 h-6 bg-[#D97706] flex items-center justify-center font-mono font-black text-black text-sm select-none">
+          <div className="w-6 h-6 bg-white flex items-center justify-center font-mono font-black text-black text-sm select-none">
             T
           </div>
           <span className="font-mono text-sm font-bold uppercase tracking-wider text-white">
@@ -107,12 +107,12 @@ export const Topbar: React.FC = () => {
           }}
           onFocus={() => setShowSearchResults(true)}
           placeholder="GLOBAL CONSOLE SEARCH (CTRL+K)..."
-          className="w-full h-8 pl-9 pr-3 bg-[#0F0F10] border border-[#2C2C2C] text-xs font-mono text-white placeholder-[#8E8E93] focus:border-[#D97706] focus:outline-none focus:ring-1 focus:ring-[#D97706] rounded-none uppercase tracking-wider"
+          className="w-full h-8 pl-9 pr-3 bg-[#000000] border border-[#333333] text-xs font-mono text-white placeholder-[#8E8E93] focus:border-white focus:outline-none focus:ring-1 focus:ring-white rounded-none uppercase tracking-wider"
         />
 
         {/* Global Search Results Dropdown */}
         {showSearchResults && searchQuery && (
-          <div className="absolute top-10 left-0 right-0 border border-[#2C2C2C] bg-[#111111] max-h-96 overflow-y-auto z-40 p-3 flex flex-col gap-3 font-mono text-[10px] text-left">
+          <div className="absolute top-10 left-0 right-0 border border-[#333333] bg-[#111111] max-h-96 overflow-y-auto z-40 p-3 flex flex-col gap-3 font-mono text-[10px] text-left">
             {!hasSearchResults ? (
               <div className="text-gray-500 uppercase py-2 text-center">No matching console records found.</div>
             ) : (
@@ -120,12 +120,12 @@ export const Topbar: React.FC = () => {
                 {/* 1. Vehicles */}
                 {searchResults.vehicles.length > 0 && (
                   <div className="flex flex-col gap-1.5">
-                    <span className="text-[9px] text-[#D97706] font-bold uppercase border-b border-[#2C2C2C] pb-0.5 mb-1">Vehicles Registry</span>
+                    <span className="text-[9px] text-white font-bold uppercase border-b border-[#333333] pb-0.5 mb-1">Vehicles Registry</span>
                     {searchResults.vehicles.map(v => (
                       <button
                         key={v.registrationNumber}
                         onClick={() => handleSearchResultClick('/fleet')}
-                        className="flex items-center justify-between text-white hover:text-[#D97706] py-1 text-left w-full cursor-pointer"
+                        className="flex items-center justify-between text-white hover:text-[#A3A3A3] py-1 text-left w-full cursor-pointer"
                       >
                         <span>{v.registrationNumber} - {v.model.toUpperCase()}</span>
                         <span className="text-[9px] text-gray-500 uppercase">{v.status}</span>
@@ -137,12 +137,12 @@ export const Topbar: React.FC = () => {
                 {/* 2. Drivers */}
                 {searchResults.drivers.length > 0 && (
                   <div className="flex flex-col gap-1.5">
-                    <span className="text-[9px] text-[#D97706] font-bold uppercase border-b border-[#2C2C2C] pb-0.5 mb-1">Drivers Roster</span>
+                    <span className="text-[9px] text-white font-bold uppercase border-b border-[#333333] pb-0.5 mb-1">Drivers Roster</span>
                     {searchResults.drivers.map(d => (
                       <button
                         key={d.driverId}
                         onClick={() => handleSearchResultClick('/drivers')}
-                        className="flex items-center justify-between text-white hover:text-[#D97706] py-1 text-left w-full cursor-pointer"
+                        className="flex items-center justify-between text-white hover:text-[#A3A3A3] py-1 text-left w-full cursor-pointer"
                       >
                         <span>{d.fullName.toUpperCase()} (ID: {d.driverId})</span>
                         <span className="text-[9px] text-gray-500 uppercase">{d.status}</span>
@@ -154,12 +154,12 @@ export const Topbar: React.FC = () => {
                 {/* 3. Trips */}
                 {searchResults.trips.length > 0 && (
                   <div className="flex flex-col gap-1.5">
-                    <span className="text-[9px] text-[#D97706] font-bold uppercase border-b border-[#2C2C2C] pb-0.5 mb-1">Trip Dispatches</span>
+                    <span className="text-[9px] text-white font-bold uppercase border-b border-[#333333] pb-0.5 mb-1">Trip Dispatches</span>
                     {searchResults.trips.map(t => (
                       <button
                         key={t.tripId}
                         onClick={() => handleSearchResultClick('/trips')}
-                        className="flex items-center justify-between text-white hover:text-[#D97706] py-1 text-left w-full cursor-pointer"
+                        className="flex items-center justify-between text-white hover:text-[#A3A3A3] py-1 text-left w-full cursor-pointer"
                       >
                         <span>{t.tripId} ({t.origin} → {t.destination})</span>
                         <span className="text-[9px] text-gray-500 uppercase">{t.status}</span>
@@ -171,12 +171,12 @@ export const Topbar: React.FC = () => {
                 {/* 4. Maintenance */}
                 {searchResults.maintenance.length > 0 && (
                   <div className="flex flex-col gap-1.5">
-                    <span className="text-[9px] text-[#D97706] font-bold uppercase border-b border-[#2C2C2C] pb-0.5 mb-1">Maintenance Logs</span>
+                    <span className="text-[9px] text-white font-bold uppercase border-b border-[#333333] pb-0.5 mb-1">Maintenance Logs</span>
                     {searchResults.maintenance.map(m => (
                       <button
                         key={m.jobId}
                         onClick={() => handleSearchResultClick('/maintenance')}
-                        className="flex items-center justify-between text-white hover:text-[#D97706] py-1 text-left w-full cursor-pointer"
+                        className="flex items-center justify-between text-white hover:text-[#A3A3A3] py-1 text-left w-full cursor-pointer"
                       >
                         <span className="truncate max-w-[250px]">{m.vehicleReg} - {m.description.toUpperCase()}</span>
                         <span className="text-[9px] text-gray-500 uppercase">{m.status}</span>
@@ -188,12 +188,12 @@ export const Topbar: React.FC = () => {
                 {/* 5. Fuel & Expenses */}
                 {(searchResults.fuel.length > 0 || searchResults.expenses.length > 0) && (
                   <div className="flex flex-col gap-1.5">
-                    <span className="text-[9px] text-[#D97706] font-bold uppercase border-b border-[#2C2C2C] pb-0.5 mb-1">Fuel & Expenses Ledger</span>
+                    <span className="text-[9px] text-white font-bold uppercase border-b border-[#333333] pb-0.5 mb-1">Fuel & Expenses Ledger</span>
                     {searchResults.fuel.map(f => (
                       <button
                         key={f.logId}
                         onClick={() => handleSearchResultClick('/fuel')}
-                        className="flex items-center justify-between text-white hover:text-[#D97706] py-1 text-left w-full cursor-pointer"
+                        className="flex items-center justify-between text-white hover:text-[#A3A3A3] py-1 text-left w-full cursor-pointer"
                       >
                         <span>[FUEL] {f.vehicleReg} - {f.quantity}L ({f.fuelType})</span>
                         <span className="text-[9px] text-green-500 font-bold">₹{f.totalCost.toLocaleString()}</span>
@@ -203,7 +203,7 @@ export const Topbar: React.FC = () => {
                       <button
                         key={e.expenseId}
                         onClick={() => handleSearchResultClick('/fuel')}
-                        className="flex items-center justify-between text-white hover:text-[#D97706] py-1 text-left w-full cursor-pointer"
+                        className="flex items-center justify-between text-white hover:text-[#A3A3A3] py-1 text-left w-full cursor-pointer"
                       >
                         <span>[EXP] {e.vehicleReg} - {e.category.toUpperCase()}</span>
                         <span className="text-[9px] text-red-500 font-bold">₹{e.amount.toLocaleString()}</span>
@@ -223,12 +223,12 @@ export const Topbar: React.FC = () => {
         <div ref={notificationsRef} className="relative">
           <button
             onClick={() => setShowNotifications(!showNotifications)}
-            className="relative p-1.5 bg-[#1C1C20] border border-[#2C2C2C] hover:border-[#D97706] text-[#A1A1AA] hover:text-white transition-colors cursor-pointer rounded-none"
+            className="relative p-1.5 bg-[#222222] border border-[#333333] hover:border-white text-[#A3A3A3] hover:text-white transition-colors cursor-pointer rounded-none"
             title="Global Alerts"
           >
             <Bell size={14} />
             {unreadNotificationsCount > 0 && (
-              <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-600 border border-black flex items-center justify-center text-[8px] font-mono font-bold text-white leading-none">
+              <span className="absolute -top-1 -right-1 w-4 h-4 bg-white border border-black flex items-center justify-center text-[8px] font-mono font-bold text-black leading-none">
                 {unreadNotificationsCount}
               </span>
             )}
@@ -236,13 +236,13 @@ export const Topbar: React.FC = () => {
 
           {/* Notifications Dropdown */}
           {showNotifications && (
-            <div className="absolute top-9 right-0 w-80 border border-[#2C2C2C] bg-[#111111] z-40 p-3 flex flex-col gap-3 font-mono text-[10px] text-left shadow-lg">
-              <div className="flex items-center justify-between border-b border-[#2C2C2C] pb-2">
+            <div className="absolute top-9 right-0 w-80 border border-[#333333] bg-[#111111] z-40 p-3 flex flex-col gap-3 font-mono text-[10px] text-left shadow-lg">
+              <div className="flex items-center justify-between border-b border-[#333333] pb-2">
                 <span className="font-bold text-white uppercase tracking-wider">System Alerts</span>
                 {unreadNotificationsCount > 0 && (
                   <button
                     onClick={markAllNotificationsRead}
-                    className="text-[8px] text-[#D97706] hover:underline font-bold uppercase cursor-pointer"
+                    className="text-[8px] text-white hover:underline font-bold uppercase cursor-pointer"
                   >
                     Mark all read
                   </button>
@@ -256,8 +256,8 @@ export const Topbar: React.FC = () => {
                   notifications.map(n => (
                     <div
                       key={n.id}
-                      className={`p-2 border border-[#2C2C2C]/50 flex flex-col gap-1 transition-colors ${
-                        n.unread ? 'bg-[#1C1C20]/40 border-l-2 border-l-[#D97706]' : 'bg-[#0F0F10]'
+                      className={`p-2 border border-[#333333]/50 flex flex-col gap-1 transition-colors ${
+                        n.unread ? 'bg-[#222222]/40 border-l-2 border-l-white' : 'bg-[#000000]'
                       }`}
                     >
                       <div className="flex items-center justify-between font-bold text-[8px] text-gray-500 uppercase">
@@ -274,7 +274,7 @@ export const Topbar: React.FC = () => {
         </div>
 
         {/* User Account summary */}
-        <div className="flex items-center gap-3 border-r border-[#2C2C2C] pr-4">
+        <div className="flex items-center gap-3 border-r border-[#333333] pr-4">
           <div className="text-right flex flex-col justify-center">
             <span className="text-xs font-semibold text-white leading-none">
               {user.name}
@@ -284,14 +284,14 @@ export const Topbar: React.FC = () => {
             </span>
           </div>
 
-          <Badge variant="orange">
+          <Badge variant="outline">
             {ROLE_LABELS[user.role]}
           </Badge>
 
           {/* Initials linked to Profile page */}
           <Link
             to="/profile"
-            className="w-8 h-8 bg-[#2C2C2C] border border-[#8E8E93]/20 flex items-center justify-center text-xs font-mono text-white font-bold select-none rounded-none hover:border-[#D97706] hover:text-[#D97706] transition-colors cursor-pointer"
+            className="w-8 h-8 bg-[#222222] border border-[#A3A3A3]/20 flex items-center justify-center text-xs font-mono text-white font-bold select-none rounded-none hover:border-white hover:text-white transition-colors cursor-pointer"
             title="View User Profile"
           >
             {getInitials(user.name)}
@@ -301,7 +301,7 @@ export const Topbar: React.FC = () => {
         {/* Logout button */}
         <button
           onClick={logout}
-          className="flex items-center gap-2 h-8 px-3 bg-[#1C1C20] border border-[#2C2C2C] text-xs font-mono font-semibold uppercase tracking-wider text-[#A1A1AA] hover:bg-[#991B1B] hover:text-white hover:border-[#991B1B] active:bg-[#7F1D1D] rounded-none cursor-pointer transition-colors"
+          className="flex items-center gap-2 h-8 px-3 bg-[#222222] border border-[#333333] text-xs font-mono font-bold uppercase tracking-wider text-[#A3A3A3] hover:bg-white hover:text-black hover:border-white active:bg-gray-200 rounded-none cursor-pointer transition-colors"
         >
           <LogOut size={12} />
           <span className="hidden sm:inline">LOGOUT</span>

@@ -14,7 +14,7 @@ export const NotFound: React.FC = () => {
         <div className="flex items-center gap-3 text-[#D97706] mb-4">
           <AlertCircle size={20} />
           <h1 className="text-sm font-bold uppercase tracking-wider">
-            ERROR_CODE: 404_NOT_FOUND
+            ERROR_CODE: 404 NOT FOUND
           </h1>
         </div>
 

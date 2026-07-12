@@ -271,11 +271,11 @@ export const VehicleRegistry: React.FC = () => {
   };
 
   const handleExportCSV = () => {
-    alert(`CSV_EXPORT_INITIATED // ${vehicles.length} records written to local disk.`);
+    alert(`CSV EXPORT INITIATED // ${vehicles.length} records written to local disk.`);
   };
 
   const handlePrint = () => {
-    alert('PRINT_MANIFEST_GENERATED // Spooling payload to fleet terminal printer...');
+    alert('PRINT MANIFEST GENERATED // Spooling payload to fleet terminal printer...');
   };
 
   const filteredVehicles = vehicles
@@ -348,12 +348,12 @@ export const VehicleRegistry: React.FC = () => {
             VEHICLE REGISTRY
           </h1>
           <p className="text-[11px] text-gray-500 mt-2 font-mono tracking-wide">
-            FLEET_METADATA_DATABASE // RECORDS: {totalVehiclesCount}
+            FLEET METADATA DATABASE // RECORDS: {totalVehiclesCount}
           </p>
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 border-r border-[#2C2C2C] pr-4 h-8 select-none">
-            <span className="text-[10px] text-gray-500 font-mono uppercase tracking-wider">CONSOLE_ACCESS:</span>
+            <span className="text-[10px] text-gray-500 font-mono uppercase tracking-wider">CONSOLE ACCESS:</span>
             <Badge variant="orange">{ROLE_LABELS[user.role]}</Badge>
           </div>
           <div className="flex gap-2">

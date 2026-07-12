@@ -126,12 +126,12 @@ export const ReportsAnalytics: React.FC = () => {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      alert('BI_REPORT_RECOMPILATION_COMPLETE // Financial and fleet logs re-calculated successfully.');
+      alert('BI REPORT RECOMPILATION COMPLETE // Financial and fleet logs re-calculated successfully.');
     }, 1000);
   };
 
   const handleExportPlaceholder = (type: string) => {
-    alert(`EXECUTIVE_REPORT_BROADCAST // Triggering ${type} document pipeline.`);
+    alert(`EXECUTIVE REPORT BROADCAST // Triggering ${type} document pipeline.`);
   };
 
   const filteredTrips = React.useMemo(() => {
@@ -224,7 +224,7 @@ export const ReportsAnalytics: React.FC = () => {
             REPORTS & ANALYTICS
           </h1>
           <p className="text-[11px] text-gray-500 mt-2 font-mono tracking-wide">
-            ENTERPRISE_BUSINESS_INTELLIGENCE // ROLE: {ROLE_LABELS[user.role]}
+            ENTERPRISE BUSINESS INTELLIGENCE // ROLE: {ROLE_LABELS[user.role]}
           </p>
         </div>
         <div className="flex items-center gap-3">

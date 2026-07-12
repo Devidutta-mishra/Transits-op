@@ -78,7 +78,7 @@ export const Sidebar: React.FC = () => {
         role="navigation"
         aria-label="Main navigation"
         className={cn(
-          "fixed left-0 top-14 h-[calc(100vh-3.5rem)] bg-[#141416] border-r border-[#2C2C2C] z-30 flex flex-col justify-between font-mono transition-all duration-200",
+          "fixed left-0 top-14 h-[calc(100vh-3.5rem)] bg-[#111111] border-r border-[#333333] z-30 flex flex-col justify-between font-sans transition-all duration-200",
           sidebarWidth,
           "hidden md:flex",
           isMobileOpen && "!flex !w-60 !z-40"
@@ -120,11 +120,11 @@ export const Sidebar: React.FC = () => {
                 onClick={() => setIsMobileOpen(false)}
                 className={({ isActive }) =>
                   cn(
-                    "flex items-center gap-3 px-4 py-3 text-xs tracking-wider font-semibold border-l-2 transition-all uppercase select-none cursor-pointer",
+                    "flex items-center gap-3 px-4 py-3 text-xs tracking-wider font-bold border-l-2 transition-all uppercase select-none cursor-pointer",
                     isCollapsed && !isMobileOpen && "justify-center px-0",
                     isActive
-                      ? "bg-[#1C1C20] text-white border-[#D97706]"
-                      : "text-[#8E8E93] border-transparent hover:bg-[#1C1C20] hover:text-white"
+                      ? "bg-[#222222] text-white border-white"
+                      : "text-[#A3A3A3] border-transparent hover:bg-[#222222] hover:text-white"
                   )
                 }
                 aria-label={item.name}
@@ -133,7 +133,7 @@ export const Sidebar: React.FC = () => {
                   const Icon = item.icon;
                   return (
                     <>
-                      <span className={isActive ? "text-[#D97706]" : "text-[#8E8E93]"}>
+                      <span className={isActive ? "text-white" : "text-[#A3A3A3]"}>
                         <Icon size={16} aria-hidden="true" />
                       </span>
                       {(!isCollapsed || isMobileOpen) && <span>{item.name}</span>}
@@ -146,7 +146,7 @@ export const Sidebar: React.FC = () => {
         </nav>
 
         {(!isCollapsed || isMobileOpen) && (
-          <div className="p-4 border-t border-[#2C2C2C] text-[10px] text-[#8E8E93] tracking-widest uppercase">
+          <div className="p-4 border-t border-[#333333] text-[10px] text-[#A3A3A3] font-mono tracking-widest uppercase">
             <span>CONSOLE V1.0.0</span>
           </div>
         )}

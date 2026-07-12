@@ -255,11 +255,11 @@ export const DriverManagement: React.FC = () => {
   };
 
   const handleExportCSV = () => {
-    alert(`CSV_EXPORT_INITIATED // ${drivers.length} employee records written to local disk.`);
+    alert(`CSV EXPORT INITIATED // ${drivers.length} driver profiles written to local disc.`);
   };
 
   const handlePrint = () => {
-    alert('PRINT_MANIFEST_GENERATED // Spooling payload to employee records terminal printer...');
+    alert('PRINT MANIFEST GENERATED // Spooling payload to employee records terminal printer...');
   };
 
   const filteredDrivers = drivers
@@ -355,12 +355,12 @@ export const DriverManagement: React.FC = () => {
             DRIVER MANAGEMENT
           </h1>
           <p className="text-[11px] text-gray-500 mt-2 font-mono tracking-wide">
-            FLEET_EMPLOYEE_ROSTER // ACTIVE DRIVERS: {totalDriversCount}
+            DRIVER ROSTER DATABASE // RECORDS: {totalDriversCount}
           </p>
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 border-r border-[#2C2C2C] pr-4 h-8 select-none">
-            <span className="text-[10px] text-gray-500 font-mono uppercase tracking-wider">CONSOLE_ACCESS:</span>
+            <span className="text-[10px] text-gray-500 font-mono uppercase tracking-wider">CONSOLE ACCESS:</span>
             <Badge variant="orange">{ROLE_LABELS[user.role]}</Badge>
           </div>
           <div className="flex gap-2">

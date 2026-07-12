@@ -42,14 +42,14 @@ export const UserProfile: React.FC = () => {
   const handlePasswordChange = (e: React.FormEvent) => {
     e.preventDefault();
     if (!currPassword || !newPassword || !confirmPassword) {
-      alert('SECURITY_ERROR // Please fill out all password fields.');
+      alert('SECURITY ERROR // Please fill out all password fields.');
       return;
     }
     if (newPassword !== confirmPassword) {
-      alert('SECURITY_ERROR // New passwords do not match confirmation input.');
+      alert('SECURITY ERROR // New passwords do not match confirmation input.');
       return;
     }
-    alert('SECURITY_BROADCAST // User password credentials updated successfully.');
+    alert('SECURITY BROADCAST // User password credentials updated successfully.');
     setCurrPassword('');
     setNewPassword('');
     setConfirmPassword('');
@@ -72,7 +72,7 @@ export const UserProfile: React.FC = () => {
           USER PROFILE
         </h1>
         <p className="text-[11px] text-gray-500 mt-2 font-mono tracking-wide">
-          PERSONAL_USER_ACCOUNT_METADATA // READ_WRITE_MODE
+          PERSONAL USER ACCOUNT METADATA // READ WRITE MODE
         </p>
       </div>
 

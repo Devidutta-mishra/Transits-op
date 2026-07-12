@@ -241,11 +241,11 @@ export const TripManagement: React.FC = () => {
   };
 
   const handleExportCSV = () => {
-    alert(`CSV_EXPORT_INITIATED // ${trips.length} dispatch logs written to local disc.`);
+    alert(`CSV EXPORT INITIATED // ${trips.length} dispatch logs written to local disc.`);
   };
 
   const handlePrint = () => {
-    alert('PRINT_MANIFEST_GENERATED // Spooling operational payloads to terminal dispatch printer...');
+    alert('PRINT MANIFEST GENERATED // Spooling operational payloads to terminal dispatch printer...');
   };
 
   const filteredTrips = trips.filter(t => {
@@ -322,12 +322,12 @@ export const TripManagement: React.FC = () => {
             TRIP MANAGEMENT
           </h1>
           <p className="text-[11px] text-gray-500 mt-2 font-mono tracking-wide">
-            OPERATIONS_DISPATCH_DATABASE // RECORDS: {totalTripsCount}
+            OPERATIONS DISPATCH DATABASE // RECORDS: {totalTripsCount}
           </p>
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 border-r border-[#2C2C2C] pr-4 h-8 select-none">
-            <span className="text-[10px] text-gray-500 font-mono uppercase tracking-wider">CONSOLE_ACCESS:</span>
+            <span className="text-[10px] text-gray-500 font-mono uppercase tracking-wider">CONSOLE ACCESS:</span>
             <Badge variant="orange">{ROLE_LABELS[user.role]}</Badge>
           </div>
           <div className="flex gap-2">
