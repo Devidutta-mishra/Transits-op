@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { usePermission } from '../hooks/usePermission';
 import { mockVehiclesData } from '../mock/vehicles';
-import type { Vehicle } from '../mock/vehicles';
+import type { Vehicle, VehicleStatus } from '../mock/vehicles';
+import { api } from '../services/api';
 import { SummaryCard } from '../components/fleet/SummaryCard';
 import { VehicleFilters } from '../components/fleet/VehicleFilters';
 import { VehicleTable } from '../components/fleet/VehicleTable';
@@ -44,12 +45,78 @@ export const VehicleRegistry: React.FC = () => {
   const [isDeleteOpen, setIsDeleteOpen] = useState<boolean>(false);
   const [vehicleToDelete, setVehicleToDelete] = useState<Vehicle | null>(null);
 
-  useEffect(() => {
-    setVehicles(mockVehiclesData);
-    const timer = setTimeout(() => {
+  const mapBackendVehicleToFrontend = (v: any): Vehicle => {
+    let status: VehicleStatus = 'Available';
+    if (v.status === 'ON_TRIP') status = 'On Trip';
+    else if (v.status === 'IN_SHOP' || v.status === 'MAINTENANCE') status = 'Maintenance';
+    else if (v.status === 'RETIRED') status = 'Retired';
+
+    return {
+      id: v.id,
+      registrationNumber: v.registrationNumber,
+      vehicleName: v.name || `${v.manufacturer || ''} ${v.model || ''}`.trim() || v.registrationNumber,
+      vehicleType: (v.type || 'HGV') as any,
+      manufacturer: v.manufacturer || 'Unknown',
+      model: v.model || 'Unknown',
+      modelYear: v.modelYear || 2022,
+      maxLoadCapacity: Number(v.capacityKg || 0),
+      currentOdometer: Number(v.currentOdometer || 0),
+      acquisitionCost: Number(v.purchasePrice || 0),
+      vinNumber: v.vinNumber || 'N/A',
+      engineNumber: v.engineNumber || 'N/A',
+      fuelType: (v.fuelType || 'Diesel') as any,
+      purchaseDate: v.purchaseDate ? new Date(v.purchaseDate).toISOString().split('T')[0] : '',
+      insuranceExpiry: v.insuranceExpiry ? new Date(v.insuranceExpiry).toISOString().split('T')[0] : '',
+      registrationExpiry: v.registrationExpiry ? new Date(v.registrationExpiry).toISOString().split('T')[0] : '',
+      assignedDriver: v.assignedDriver?.user?.fullName || '',
+      status: status,
+      region: (v.region || 'West') as any,
+    } as any;
+  };
+
+  const mapFrontendVehicleToBackend = (v: any) => {
+    let status = 'AVAILABLE';
+    if (v.status === 'On Trip') status = 'ON_TRIP';
+    else if (v.status === 'Maintenance') status = 'IN_SHOP';
+    else if (v.status === 'Retired') status = 'RETIRED';
+
+    return {
+      registrationNumber: v.registrationNumber,
+      name: v.vehicleName,
+      type: v.vehicleType,
+      manufacturer: v.manufacturer,
+      model: v.model,
+      modelYear: Number(v.modelYear || 2022),
+      capacityKg: Number(v.maxLoadCapacity || 0),
+      currentOdometer: Number(v.currentOdometer || 0),
+      purchasePrice: Number(v.acquisitionCost || 0),
+      vinNumber: v.vinNumber,
+      engineNumber: v.engineNumber,
+      fuelType: v.fuelType,
+      purchaseDate: v.purchaseDate ? new Date(v.purchaseDate) : null,
+      insuranceExpiry: v.insuranceExpiry ? new Date(v.insuranceExpiry) : null,
+      registrationExpiry: v.registrationExpiry ? new Date(v.registrationExpiry) : null,
+      status: status,
+      region: v.region
+    };
+  };
+
+  const fetchVehicles = async () => {
+    try {
+      setIsLoading(true);
+      const items = await api.vehicles.list();
+      const mapped = items.map(mapBackendVehicleToFrontend);
+      setVehicles(mapped);
+    } catch (err) {
+      console.error('Failed to fetch vehicles:', err);
+      setVehicles(mockVehiclesData);
+    } finally {
       setIsLoading(false);
-    }, 1000);
-    return () => clearTimeout(timer);
+    }
+  };
+
+  useEffect(() => {
+    fetchVehicles();
   }, []);
 
   if (!user || !role) return null;
@@ -91,34 +158,65 @@ export const VehicleRegistry: React.FC = () => {
     setIsDetailsOpen(true);
   };
 
-  const handleArchive = (vehicle: Vehicle) => {
-    setVehicles(prev =>
-      prev.map(v =>
-        v.registrationNumber === vehicle.registrationNumber
-          ? { ...v, status: 'Retired' }
-          : v
-      )
-    );
+  const handleArchive = async (vehicle: Vehicle) => {
+    try {
+      const id = (vehicle as any).id;
+      if (id) {
+        await api.vehicles.update(id, { status: 'RETIRED' });
+        fetchVehicles();
+      } else {
+        setVehicles(prev =>
+          prev.map(v =>
+            v.registrationNumber === vehicle.registrationNumber
+              ? { ...v, status: 'Retired' }
+              : v
+          )
+        );
+      }
+    } catch (err) {
+      console.error('Error archiving vehicle:', err);
+    }
   };
 
-  const handleDuplicate = (vehicle: Vehicle) => {
-    let copyIndex = 1;
-    let newRegNumber = `${vehicle.registrationNumber}-C${copyIndex}`;
-    while (vehicles.some(v => v.registrationNumber.toLowerCase() === newRegNumber.toLowerCase())) {
-      copyIndex++;
-      newRegNumber = `${vehicle.registrationNumber}-C${copyIndex}`;
+  const handleDuplicate = async (vehicle: Vehicle) => {
+    try {
+      let copyIndex = 1;
+      let newRegNumber = `${vehicle.registrationNumber}-C${copyIndex}`;
+      while (vehicles.some(v => v.registrationNumber.toLowerCase() === newRegNumber.toLowerCase())) {
+        copyIndex++;
+        newRegNumber = `${vehicle.registrationNumber}-C${copyIndex}`;
+      }
+
+      const duplicatedPayload = mapFrontendVehicleToBackend({
+        ...vehicle,
+        registrationNumber: newRegNumber,
+        vehicleName: `${vehicle.vehicleName} (Copy)`,
+        vinNumber: `VIN${Math.random().toString(36).substring(2, 17).toUpperCase()}`,
+        engineNumber: `ENG${Math.random().toString(36).substring(2, 11).toUpperCase()}`,
+        status: 'Available',
+      });
+
+      await api.vehicles.create(duplicatedPayload);
+      fetchVehicles();
+    } catch (err) {
+      console.error('Error duplicating vehicle:', err);
+      
+      let copyIndex = 1;
+      let newRegNumber = `${vehicle.registrationNumber}-C${copyIndex}`;
+      while (vehicles.some(v => v.registrationNumber.toLowerCase() === newRegNumber.toLowerCase())) {
+        copyIndex++;
+        newRegNumber = `${vehicle.registrationNumber}-C${copyIndex}`;
+      }
+      const duplicatedVehicle: Vehicle = {
+        ...vehicle,
+        registrationNumber: newRegNumber,
+        vehicleName: `${vehicle.vehicleName} (Copy)`,
+        vinNumber: `VIN${Math.random().toString(36).substring(2, 17).toUpperCase()}`,
+        engineNumber: `ENG${Math.random().toString(36).substring(2, 11).toUpperCase()}`,
+        status: 'Available',
+      };
+      setVehicles(prev => [duplicatedVehicle, ...prev]);
     }
-
-    const duplicatedVehicle: Vehicle = {
-      ...vehicle,
-      registrationNumber: newRegNumber,
-      vehicleName: `${vehicle.vehicleName} (Copy)`,
-      vinNumber: `VIN${Math.random().toString(36).substring(2, 17).toUpperCase()}`,
-      engineNumber: `ENG${Math.random().toString(36).substring(2, 11).toUpperCase()}`,
-      status: 'Available',
-    };
-
-    setVehicles(prev => [duplicatedVehicle, ...prev]);
   };
 
   const handleOpenDelete = (vehicle: Vehicle) => {
@@ -126,23 +224,47 @@ export const VehicleRegistry: React.FC = () => {
     setIsDeleteOpen(true);
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (vehicleToDelete) {
-      setVehicles(prev =>
-        prev.filter(v => v.registrationNumber !== vehicleToDelete.registrationNumber)
-      );
+      try {
+        const id = (vehicleToDelete as any).id;
+        if (id) {
+          await api.vehicles.delete(id);
+          fetchVehicles();
+        } else {
+          setVehicles(prev =>
+            prev.filter(v => v.registrationNumber !== vehicleToDelete.registrationNumber)
+          );
+        }
+      } catch (err) {
+        console.error('Error deleting vehicle:', err);
+        alert((err as any).message || 'Error deleting vehicle');
+      }
       setIsDeleteOpen(false);
       setVehicleToDelete(null);
     }
   };
 
-  const handleFormSubmit = (data: Vehicle) => {
-    if (formMode === 'add') {
-      setVehicles(prev => [data, ...prev]);
-    } else {
-      setVehicles(prev =>
-        prev.map(v => (v.registrationNumber === data.registrationNumber ? data : v))
-      );
+  const handleFormSubmit = async (data: Vehicle) => {
+    try {
+      const payload = mapFrontendVehicleToBackend(data);
+      if (formMode === 'add') {
+        await api.vehicles.create(payload);
+      } else {
+        const id = (selectedVehicle as any)?.id;
+        if (id) {
+          await api.vehicles.update(id, payload);
+        } else {
+          // Fallback if no ID is found
+          setVehicles(prev =>
+            prev.map(v => (v.registrationNumber === data.registrationNumber ? data : v))
+          );
+        }
+      }
+      fetchVehicles();
+    } catch (err) {
+      console.error('Error saving vehicle:', err);
+      alert((err as any).message || 'Error saving vehicle');
     }
     setIsFormOpen(false);
     setSelectedVehicle(null);
