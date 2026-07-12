@@ -1,6 +1,7 @@
 package com.transitops.driver.di
 
-import com.transitops.driver.data.repository.AuthenticationRepositoryImpl
+import com.transitops.driver.auth.repository.AuthRepository
+import com.transitops.driver.auth.repository.FakeAuthRepository
 import com.transitops.driver.data.repository.DriverRepositoryImpl
 import com.transitops.driver.data.repository.TripRepositoryImpl
 import com.transitops.driver.domain.repository.AuthenticationRepository
@@ -18,9 +19,9 @@ abstract class RepositoryModule {
 
     @Binds
     @Singleton
-    abstract fun bindAuthenticationRepository(
-        authenticationRepositoryImpl: AuthenticationRepositoryImpl
-    ): AuthenticationRepository
+    abstract fun bindAuthRepository(
+        fakeAuthRepository: FakeAuthRepository
+    ): AuthRepository
 
     @Binds
     @Singleton
