@@ -5,6 +5,7 @@ import { Unauthorized } from '../pages/Unauthorized';
 import { NotFound } from '../pages/NotFound';
 import { Dashboard } from '../pages/Dashboard';
 import { PlaceholderPage } from '../pages/PlaceholderPage';
+import { VehicleRegistry } from '../pages/VehicleRegistry';
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import { ProtectedRoute } from './ProtectedRoute';
 import { useAuth } from '../hooks/useAuth';
@@ -51,7 +52,7 @@ export const AppRoutes: React.FC = () => {
           path="fleet" 
           element={
             <ProtectedRoute permission="view:fleet">
-              <PlaceholderPage title="Fleet Management" moduleName="Fleet" />
+              <VehicleRegistry />
             </ProtectedRoute>
           } 
         />
