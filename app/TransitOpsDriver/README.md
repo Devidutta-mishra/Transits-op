@@ -16,6 +16,15 @@ The **TransitOps Driver App** is a native Android application designed specifica
 - **Real-time Sync:** Connects to the TransitOps backend to sync statuses instantly with dispatchers on the web console.
 - **Driver-first UI:** Built with large, accessible tap targets and a high-contrast mode for visibility while on the road.
 
+## Screenshots
+
+| Current Assignment & ETA | Map & Live Navigation |
+|:---:|:---:|
+| ![Home](./assets/screen1.png) | ![Navigation](./assets/screen2.png) |
+| **Quick Actions & Tasks** | **Vehicle Health & SOS** |
+| ![Actions](./assets/screen3.png) | ![Health](./assets/screen4.png) |
+
+
 ## Getting Started
 
 ### Prerequisites
