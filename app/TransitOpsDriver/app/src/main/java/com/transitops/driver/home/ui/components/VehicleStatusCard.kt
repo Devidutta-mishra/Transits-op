@@ -37,13 +37,13 @@ fun VehicleStatusCard(
             ) {
                 Column {
                     Text(
-                        text = vehicle?.name ?: "No Vehicle Assigned",
+                        text = vehicle?.registrationNumber ?: "No Vehicle Assigned",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                     Text(
-                        text = vehicle?.plateNumber ?: "---",
+                        text = "${vehicle?.manufacturer ?: ""} ${vehicle?.model ?: ""}",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
                     )
@@ -52,7 +52,7 @@ fun VehicleStatusCard(
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary
                 ) {
-                    Text(text = stats?.currentShift ?: "Offline", modifier = Modifier.padding(4.dp))
+                    Text(text = if (vehicle?.status != null) vehicle.status else "Offline", modifier = Modifier.padding(4.dp))
                 }
             }
 
@@ -64,7 +64,7 @@ fun VehicleStatusCard(
                 StatusItem(
                     icon = Icons.Default.Route,
                     label = "Distance",
-                    value = stats?.todayDistance ?: "0 km",
+                    value = "${stats?.distanceTravelled ?: 0.0} km",
                     modifier = Modifier.weight(1f)
                 )
                 StatusItem(
@@ -76,7 +76,7 @@ fun VehicleStatusCard(
                 StatusItem(
                     icon = Icons.Default.LocalGasStation,
                     label = "Fuel",
-                    value = "${((vehicle?.fuelLevel ?: 0f) * 100).toInt()}%",
+                    value = if (vehicle?.fuelLevel != null) "${(vehicle.fuelLevel * 100).toInt()}%" else "---",
                     modifier = Modifier.weight(1f)
                 )
             }

@@ -13,11 +13,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import com.transitops.driver.home.model.TaskDto
 
+// Backend currently doesn't provide a specific task list, but we keep this for UI placeholder
+// and future integration if needed.
 @Composable
 fun TaskChecklist(
-    tasks: List<TaskDto>,
     onTaskToggle: (String, Boolean) -> Unit
 ) {
     Card(
@@ -27,27 +27,18 @@ fun TaskChecklist(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Today's Tasks",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = "${tasks.count { it.isCompleted }}/${tasks.size} Done",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
+            Text(
+                text = "Today's Tasks",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            tasks.forEach { task ->
-                TaskItem(task = task, onToggle = { onTaskToggle(task.id, it) })
+            // Placeholder tasks
+            val tasks = listOf("Check Vehicle Oil", "Update Logbook", "Verify Cargo")
+            tasks.forEach { title ->
+                TaskItem(title = title, isCompleted = false, onToggle = { /* TODO */ })
             }
         }
     }
@@ -55,11 +46,12 @@ fun TaskChecklist(
 
 @Composable
 private fun TaskItem(
-    task: TaskDto,
+    title: String,
+    isCompleted: Boolean,
     onToggle: (Boolean) -> Unit
 ) {
     val iconColor by animateColorAsState(
-        targetValue = if (task.isCompleted) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
+        targetValue = if (isCompleted) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
         label = "iconColor"
     )
 
@@ -69,18 +61,18 @@ private fun TaskItem(
             .padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        IconButton(onClick = { onToggle(!task.isCompleted) }) {
+        IconButton(onClick = { onToggle(!isCompleted) }) {
             Icon(
-                imageVector = if (task.isCompleted) Icons.Default.CheckCircle else Icons.Default.RadioButtonUnchecked,
+                imageVector = if (isCompleted) Icons.Default.CheckCircle else Icons.Default.RadioButtonUnchecked,
                 contentDescription = null,
                 tint = iconColor
             )
         }
         Text(
-            text = task.title,
+            text = title,
             style = MaterialTheme.typography.bodyLarge,
-            textDecoration = if (task.isCompleted) TextDecoration.LineThrough else null,
-            color = if (task.isCompleted) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.onSurface
+            textDecoration = if (isCompleted) TextDecoration.LineThrough else null,
+            color = if (isCompleted) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.onSurface
         )
     }
 }

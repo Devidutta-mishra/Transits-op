@@ -16,26 +16,37 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+import com.transitops.driver.home.model.QuickActionsDto
+
 data class QuickAction(
     val title: String,
     val icon: ImageVector,
     val color: androidx.compose.ui.graphics.Color
 )
 
+
 @Composable
 fun QuickActionsGrid(
+    quickActions: QuickActionsDto?,
     onActionClick: (String) -> Unit
 ) {
-    val actions = listOf(
-        QuickAction("Start Trip", Icons.Default.PlayArrow, MaterialTheme.colorScheme.primary),
-        QuickAction("End Trip", Icons.Default.Stop, MaterialTheme.colorScheme.error),
+    val actions = mutableListOf<QuickAction>()
+    
+    if (quickActions?.canStartTrip == true) {
+        actions.add(QuickAction("Start Trip", Icons.Default.PlayArrow, MaterialTheme.colorScheme.primary))
+    }
+    if (quickActions?.canEndTrip == true) {
+        actions.add(QuickAction("End Trip", Icons.Default.Stop, MaterialTheme.colorScheme.error))
+    }
+    
+    actions.addAll(listOf(
         QuickAction("Scan QR", Icons.Default.QrCodeScanner, MaterialTheme.colorScheme.secondary),
-        QuickAction("Report Issue", Icons.Default.ReportProblem, androidx.compose.ui.graphics.Color(0xFFF57C00)), // Orange
+        QuickAction("Report Issue", Icons.Default.ReportProblem, androidx.compose.ui.graphics.Color(0xFFF57C00)),
         QuickAction("Fuel Entry", Icons.Default.LocalGasStation, MaterialTheme.colorScheme.tertiary),
         QuickAction("Maintenance", Icons.Default.Build, MaterialTheme.colorScheme.outline),
         QuickAction("Documents", Icons.Default.Description, MaterialTheme.colorScheme.primary),
         QuickAction("Schedule", Icons.Default.Event, MaterialTheme.colorScheme.secondary)
-    )
+    ))
 
     Column(modifier = Modifier.padding(vertical = 16.dp)) {
         Text(

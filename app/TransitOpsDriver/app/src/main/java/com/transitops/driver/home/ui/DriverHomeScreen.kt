@@ -46,7 +46,7 @@ fun DriverHomeScreen(
             when (effect) {
                 is DriverHomeEffect.ShowSnackbar -> showSnackbar(effect.message)
                 is DriverHomeEffect.NavigateToTripDetails -> {
-                    state.dashboardData?.currentTrip?.id?.let { onNavigateToTripDetails(it) }
+                    state.dashboardData?.currentTrip?.id?.let { onNavigateToTripDetails(it.toString()) }
                 }
                 is DriverHomeEffect.NavigateToNotifications -> onNavigateToNotifications()
             }
@@ -96,7 +96,7 @@ fun DriverHomeScreen(
                         item {
                             VehicleStatusCard(
                                 vehicle = dashboardData?.vehicle,
-                                stats = dashboardData?.stats
+                                stats = dashboardData?.todayStats
                             )
                         }
                         
@@ -115,6 +115,7 @@ fun DriverHomeScreen(
                         
                         item {
                             QuickActionsGrid(
+                                quickActions = dashboardData?.quickActions,
                                 onActionClick = { action ->
                                     showSnackbar("Opening $action...")
                                 }
@@ -123,7 +124,6 @@ fun DriverHomeScreen(
                         
                         item {
                             TaskChecklist(
-                                tasks = dashboardData?.tasks ?: emptyList(),
                                 onTaskToggle = { id, completed ->
                                     viewModel.onEvent(DriverHomeEvent.TaskToggled(id, completed))
                                 }
@@ -132,14 +132,15 @@ fun DriverHomeScreen(
 
                         item {
                             NotificationsSection(
-                                notifications = dashboardData?.notifications ?: emptyList(),
+                                notifications = dashboardData?.notifications ?: com.transitops.driver.home.model.DashboardNotificationsDto(0, emptyList()),
                                 onSeeAllClick = { onNavigateToNotifications() }
                             )
                         }
                         
                         item {
                             VehicleHealthCard(
-                                vehicle = dashboardData?.vehicle
+                                vehicle = dashboardData?.vehicle,
+                                vehicleHealth = dashboardData?.vehicleHealth
                             )
                         }
                         

@@ -11,10 +11,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.transitops.driver.home.model.VehicleDto
+import com.transitops.driver.home.model.VehicleHealthDto
 
 @Composable
 fun VehicleHealthCard(
-    vehicle: VehicleDto?
+    vehicle: VehicleDto?,
+    vehicleHealth: VehicleHealthDto?
 ) {
     Card(
         modifier = Modifier
@@ -23,31 +25,43 @@ fun VehicleHealthCard(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = "Vehicle Health",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Vehicle Health",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = "Score: ${vehicleHealth?.overallScore ?: "---"}",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold
+                )
+            }
             
             Spacer(modifier = Modifier.height(16.dp))
             
             Row(modifier = Modifier.fillMaxWidth()) {
                 HealthItem(
                     icon = Icons.Default.SettingsInputComponent,
-                    label = "Tyre PSI",
-                    value = vehicle?.tyrePressure ?: "---",
+                    label = "Tyres",
+                    value = vehicleHealth?.tyres ?: "---",
                     modifier = Modifier.weight(1f)
                 )
                 HealthItem(
                     icon = Icons.Default.Speed,
                     label = "Engine",
-                    value = vehicle?.engineStatus ?: "---",
+                    value = vehicleHealth?.engine ?: "---",
                     modifier = Modifier.weight(1f)
                 )
                 HealthItem(
                     icon = Icons.Default.BatteryChargingFull,
                     label = "Battery",
-                    value = vehicle?.batteryStatus ?: "---",
+                    value = vehicleHealth?.battery ?: "---",
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -70,7 +84,7 @@ fun VehicleHealthCard(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Last Service: ${vehicle?.lastService ?: "---"}",
+                        text = "Last Service: ${vehicle?.serviceDueDate ?: "---"}",
                         style = MaterialTheme.typography.labelMedium
                     )
                 }

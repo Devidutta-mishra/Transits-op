@@ -14,11 +14,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.transitops.driver.home.model.DashboardNotificationsDto
 import com.transitops.driver.home.model.NotificationDto
 
 @Composable
 fun NotificationsSection(
-    notifications: List<NotificationDto>,
+    notifications: DashboardNotificationsDto,
     onSeeAllClick: () -> Unit
 ) {
     Column(modifier = Modifier.padding(vertical = 16.dp)) {
@@ -32,6 +33,12 @@ fun NotificationsSection(
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
+            if (notifications.unreadCount > 0) {
+                Badge(containerColor = MaterialTheme.colorScheme.error) {
+                    Text(notifications.unreadCount.toString(), modifier = Modifier.padding(4.dp))
+                }
+            }
+            Spacer(modifier = Modifier.weight(1f))
             TextButton(onClick = onSeeAllClick) {
                 Text("See All")
             }
@@ -42,7 +49,7 @@ fun NotificationsSection(
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
         ) {
             Column {
-                if (notifications.isEmpty()) {
+                if (notifications.latest.isEmpty()) {
                     Text(
                         "No recent notifications",
                         modifier = Modifier.padding(16.dp),
@@ -50,9 +57,9 @@ fun NotificationsSection(
                         color = MaterialTheme.colorScheme.outline
                     )
                 } else {
-                    notifications.take(3).forEachIndexed { index, notification ->
+                    notifications.latest.take(3).forEachIndexed { index, notification ->
                         NotificationItem(notification)
-                        if (index < 2 && index < notifications.size - 1) {
+                        if (index < 2 && index < notifications.latest.size - 1) {
                             HorizontalDivider(
                                 modifier = Modifier.padding(horizontal = 16.dp),
                                 color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
@@ -96,7 +103,7 @@ private fun NotificationItem(notification: NotificationDto) {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = notification.title,
+                    text = notification.title ?: "Notification",
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Bold,
                     maxLines = 1,
@@ -104,14 +111,14 @@ private fun NotificationItem(notification: NotificationDto) {
                     modifier = Modifier.weight(1f)
                 )
                 Text(
-                    text = notification.timestamp,
+                    text = notification.timestamp ?: "",
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.outline
                 )
             }
             Spacer(modifier = Modifier.height(2.dp))
             Text(
-                text = notification.description,
+                text = notification.description ?: "",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 2,
@@ -119,7 +126,7 @@ private fun NotificationItem(notification: NotificationDto) {
             )
         }
         
-        if (!notification.isRead) {
+        if (notification.isRead == false) {
             Spacer(modifier = Modifier.width(8.dp))
             Box(
                 modifier = Modifier
