@@ -12,6 +12,8 @@ import driverRoutes from "./routes/driver.routes.js";
 import tripRoutes from "./routes/trip.routes.js";
 import vehicleRoutes from "./routes/vehicle.routes.js";
 import maintenanceRoutes from "./routes/maintenance.routes.js";
+import trackingRoutes from "./routes/tracking.routes.js";
+import dashboardRoutes from "./routes/dashboard.routes.js";
 import { env } from "./config/env.js";
 
 const app = express();
@@ -37,6 +39,8 @@ app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/drivers", driverRoutes);
 app.use("/api/v1/trips", tripRoutes);
 app.use("/api/v1/vehicles", vehicleRoutes);
+app.use("/api/v1/tracking", trackingRoutes);
+app.use("/api/v1/dashboard", dashboardRoutes);
 app.use("/api/v1/maintenance", maintenanceRoutes);
 
 app.use(notFoundHandler);

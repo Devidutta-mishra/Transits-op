@@ -1,6 +1,5 @@
 package com.transitops.driver.auth.ui.login
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,10 +26,10 @@ import kotlinx.coroutines.flow.collectLatest
 fun LoginScreen(
     viewModel: LoginViewModel,
     onNavigateToHome: () -> Unit,
-    showSnackbar: (String) -> Unit
+    showSnackbar: (String) -> Unit,
 ) {
     val state by viewModel.uiState.collectAsState()
-    var passwordVisible by remember { mutableStateOf(false) }
+    var passwordVisible by remember { mutableStateOf(value = false) }
 
     LaunchedEffect(Unit) {
         viewModel.effect.collectLatest { effect ->

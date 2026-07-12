@@ -1,6 +1,7 @@
-export function successResponse(data = {}) {
+export function successResponse(data = {}, message = "Success") {
   return {
     success: true,
+    message,
     data
   };
 }
