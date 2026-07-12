@@ -6,21 +6,31 @@ INSERT INTO roles (name, description) VALUES
 ('Financial Analyst', 'Finance'),
 ('Driver', 'Vehicle Driver');
 
-INSERT INTO users
-(
-role_id,
-full_name,
-email,
-password_hash,
-phone
-)
-VALUES
-(1,'Admin','admin@transitops.com','admin123','9999999999'),
-(2,'John Fleet','fleet@transitops.com','fleet123','9876543210'),
-(3,'David Dispatch','dispatch@transitops.com','dispatch123','9876543211'),
-(4,'Sam Safety','safety@transitops.com','safety123','9876543212'),
-(5,'Mary Finance','finance@transitops.com','finance123','9876543213'),
-(6,'Alex Driver','alex@transitops.com','driver123','9876543214');
+
+INSERT INTO users (role_id, full_name, email, password_hash, phone)
+SELECT id, 'Admin', 'admin@transitops.com', 'admin123', '9999999999'
+FROM roles WHERE name = 'Admin';
+
+INSERT INTO users (role_id, full_name, email, password_hash, phone)
+SELECT id, 'John Fleet', 'fleet@transitops.com', 'fleet123', '9876543210'
+FROM roles WHERE name = 'Fleet Manager';
+
+INSERT INTO users (role_id, full_name, email, password_hash, phone)
+SELECT id, 'David Dispatch', 'dispatch@transitops.com', 'dispatch123', '9876543211'
+FROM roles WHERE name = 'Dispatcher';
+
+INSERT INTO users (role_id, full_name, email, password_hash, phone)
+SELECT id, 'Sam Safety', 'safety@transitops.com', 'safety123', '9876543212'
+FROM roles WHERE name = 'Safety Officer';
+
+INSERT INTO users (role_id, full_name, email, password_hash, phone)
+SELECT id, 'Mary Finance', 'finance@transitops.com', 'finance123', '9876543213'
+FROM roles WHERE name = 'Financial Analyst';
+
+INSERT INTO users (role_id, full_name, email, password_hash, phone)
+SELECT id, 'Alex Driver', 'alex@transitops.com', 'driver123', '9876543214'
+FROM roles WHERE name = 'Driver';
+
 
 INSERT INTO drivers
 (
@@ -29,12 +39,36 @@ license_number,
 license_category,
 license_expiry
 )
-VALUES
-(
-6,
+SELECT
+id,
 'OD0123456789',
 'LMV',
 '2028-12-31'
+FROM users
+WHERE email = 'alex@transitops.com';
+
+INSERT INTO vehicles
+(
+registration_number,
+name,
+model,
+type,
+capacity_kg,
+purchase_price,
+purchase_date
+)
+SELECT
+'OD02AB1234',
+'Tata Ace',
+'Gold',
+'Mini Truck',
+750,
+650000,
+CURRENT_DATE
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM vehicles
+    WHERE registration_number = 'OD02AB1234'
 );
 
 INSERT INTO vehicles
@@ -44,8 +78,19 @@ name,
 model,
 type,
 capacity_kg,
-purchase_price
+purchase_price,
+purchase_date
 )
-VALUES
-('OD02AB1234','Tata Ace','Gold','Mini Truck',750,650000),
-('OD02CD5678','Ashok Leyland','Dost','Truck',1500,950000);
+SELECT
+'OD02CD5678',
+'Ashok Leyland',
+'Dost',
+'Truck',
+1500,
+950000,
+CURRENT_DATE
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM vehicles
+    WHERE registration_number = 'OD02CD5678'
+);
